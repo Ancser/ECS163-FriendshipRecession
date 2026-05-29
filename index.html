@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Human Battery — Friendship Recession</title>
+<link rel="icon" href="data:,">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0B0D13;--bg2:#111520;--bg3:#161B28;
+  --surface:#1C2230;--surface2:#232B3A;
+  --border:rgba(255,255,255,0.07);
+  --text:#E6E9F2;--text2:#8E97B0;--text3:#4E5769;
+  --amber:#F5A623;--sky:#56B4E9;--teal:#009E73;
+  --rose:#E06C75;--violet:#7B5EA7;--gold:#E8C547;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity;scroll-padding-top:46px;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+#ch-nav{position:sticky;top:0;z-index:200;background:rgba(11,13,19,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;height:46px;padding:0 32px;overflow-x:auto;gap:0;}
+.ch-brand{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-right:auto;white-space:nowrap;padding-right:20px;}
+.ch-link{display:flex;align-items:center;padding:0 12px;height:100%;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);text-decoration:none;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;}
+.ch-link:hover{color:var(--text);}.ch-link.active{color:var(--amber);border-bottom-color:var(--amber);}
+#progress{position:fixed;top:0;left:0;height:2px;background:var(--amber);z-index:300;width:0%;transition:width .08s linear;}
+.scene{min-height:calc(100vh - 46px);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;scroll-snap-align:start;scroll-snap-stop:normal;scroll-margin-top:46px;}
+.scene-2col{max-width:1080px;width:100%;margin:0 auto;padding:clamp(28px,5vh,56px) 40px;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.section-wrap{padding:clamp(20px,4vh,38px) 40px;max-width:1080px;margin:0 auto;width:100%;}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:14px;}
+h1.display{font-family:var(--sans);font-size:clamp(44px,7vw,84px);line-height:.95;font-weight:700;letter-spacing:-.03em;margin-bottom:20px;}
+h1.display em{font-style:italic;font-weight:300;color:var(--amber);}
+h2.scene-title{font-family:var(--sans);font-size:clamp(24px,3.2vw,40px);font-weight:700;line-height:1.05;letter-spacing:-.02em;margin-bottom:14px;}
+h2.scene-title em{font-style:italic;font-weight:300;color:var(--amber);}
+.scene-body{font-size:16px;font-weight:300;color:var(--text2);line-height:1.72;}
+.scene-body strong{color:var(--text);font-weight:500;}
+.hero-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:30px;}
+.stat-chip{border-top:2px solid var(--amber);padding-top:10px;min-width:106px;}
+.stat-n{font-family:var(--sans);font-size:29px;font-weight:700;color:var(--amber);display:block;line-height:1;margin-bottom:3px;}
+.stat-l{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);line-height:1.6;}
+.scroll-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);animation:bob 2s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+.arrow-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;transition:color .2s;}
+.arrow-cue:hover{color:var(--amber);}
+.glyph-wrap{display:flex;flex-direction:column;align-items:center;}
+.social-viz-pair{display:flex;align-items:center;justify-content:center;gap:22px;width:100%;}
+.radar-panel,.battery-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;}
+.viz-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;text-align:center;}
+.radar-panel svg{width:230px;max-width:100%;height:auto;overflow:visible;}
+.battery-panel svg{width:220px;max-width:100%;height:auto;overflow:visible;}
+.year-badge{font-family:var(--sans);font-size:60px;font-weight:700;letter-spacing:-.04em;color:var(--amber);line-height:1;margin-bottom:10px;transition:color 0.5s;}
+#stars-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0;transition:opacity 2.5s ease;}
+.data-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 22px 12px;}
+.card-title{font-family:var(--sans);font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.card-sub{font-family:var(--mono);font-size:9px;color:var(--text3);margin-bottom:10px;line-height:1.45;}
+.src-note{font-family:var(--mono);font-size:9px;color:var(--text3);line-height:1.55;border-top:1px solid var(--border);padding-top:7px;margin-top:8px;}
+.toggles{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.tb{font-family:var(--mono);font-size:9px;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;border-radius:3px;transition:all .15s;letter-spacing:.04em;}
+.tb.on,.tb:hover{background:var(--amber);color:var(--bg);border-color:var(--amber);}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.li{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--text2);}
+.ls{width:16px;height:3px;border-radius:1px;flex-shrink:0;}.ld{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.insight{background:rgba(245,166,35,.03);border:1px solid rgba(245,166,35,.12);border-top:2px solid var(--amber);border-radius:0 0 8px 8px;padding:14px 20px;}
+.ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.ins-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:5px;}
+.ins-text{font-size:13px;color:var(--text2);line-height:1.75;font-weight:300;}
+.ins-text strong{color:var(--text);font-weight:500;}
+.callouts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.callout{background:var(--surface);padding:11px 16px;text-align:center;}
+.callout-n{font-family:var(--sans);font-size:26px;font-weight:700;color:var(--amber);display:block;line-height:1;margin-bottom:3px;}
+.callout-t{font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);line-height:1.5;}
+.cig-compare{display:flex;flex-direction:column;gap:16px;margin:20px 0;}
+.cig-row-item{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.cig-label{font-family:var(--mono);font-size:10px;color:var(--text2);width:150px;text-align:right;flex-shrink:0;}
+.cig-bar-wrap{display:flex;gap:3px;}
+.cig-mini{width:18px;height:56px;border-radius:3px 3px 0 0;overflow:hidden;display:flex;flex-direction:column;}
+.cig-mini-paper{flex:1;}.cig-mini-filter{height:13px;}
+.cig-count{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--amber);margin-left:8px;white-space:nowrap;}
+.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:14px;}
+.hm-cell{border-radius:6px;padding:8px 5px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;user-select:none;}
+.hm-cell:hover{transform:scale(1.07);box-shadow:0 4px 18px rgba(0,0,0,.5);z-index:2;position:relative;}
+.hm-flag{font-size:16px;display:block;margin-bottom:2px;}
+.hm-name{font-family:var(--mono);font-size:7px;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.55);display:block;line-height:1.3;}
+.hm-val{font-family:var(--sans);font-size:11px;font-weight:600;display:block;color:rgba(255,255,255,.9);}
+.world-map-shell{position:relative;background:radial-gradient(circle at 50% 45%,rgba(86,180,233,.08),rgba(11,13,19,0) 62%);overflow:hidden;}
+#world-map{height:min(58vh,560px);min-height:390px;}
+#world-map svg{width:100%;height:100%;display:block;}
+.world-country{stroke:#1C2230;stroke-width:.55;cursor:pointer;transition:fill .18s,opacity .18s,stroke .18s;}
+.world-country:hover{opacity:.86;stroke:var(--text);stroke-width:.9;}
+.world-country.no-data{cursor:default;opacity:.42;}
+.world-map-note{position:absolute;left:40px;bottom:20px;font-family:var(--mono);font-size:9px;color:var(--text3);background:rgba(11,13,19,.72);border:1px solid var(--border);border-radius:5px;padding:6px 8px;backdrop-filter:blur(8px);}
+.map-legend-row{position:absolute;right:40px;bottom:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(11,13,19,.72);border:1px solid var(--border);border-radius:5px;padding:7px 9px;backdrop-filter:blur(8px);}
+.map-grad{height:9px;width:210px;border-radius:3px;background:linear-gradient(to right,#1a1f3a,#4a3a80,#c8400a,#e8820a,#F5A623);}
+#policy-detail{display:none;position:absolute;right:40px;top:24px;z-index:40;width:min(620px,34vw);max-height:calc(100% - 48px);overflow:auto;background:rgba(35,43,58,.97);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:8px;padding:18px 22px;margin:0;box-shadow:0 18px 50px rgba(0,0,0,.55);backdrop-filter:blur(10px);}
+.pd-bars-title{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin:10px 0 8px;}
+.pd-pie-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 12px;}
+.pd-mini-pie-card{border:1px solid var(--border);border-radius:7px;padding:10px;background:rgba(11,13,19,.24);}
+.pd-mini-pie-title{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text);margin-bottom:8px;}
+.pd-pie-wrap{display:grid;grid-template-columns:74px 1fr;gap:10px;align-items:center;}
+.pd-pie{width:70px;height:70px;border-radius:50%;background:conic-gradient(var(--amber) 0deg 90deg,var(--gold) 90deg 180deg,var(--sky) 180deg 270deg,var(--rose) 270deg 360deg);position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.pd-pie::after{content:"";position:absolute;inset:21px;border-radius:50%;background:rgba(35,43,58,.97);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
+.pd-pie-legend{display:flex;flex-direction:column;gap:4px;}
+.pd-pie-row{display:grid;grid-template-columns:10px 1fr 30px;align-items:center;gap:6px;}
+.pd-pie-dot{width:8px;height:8px;border-radius:50%;}
+.pd-pie-label{font-family:var(--mono);font-size:9px;color:var(--text2);}
+.pd-pie-value{font-family:var(--mono);font-size:9px;color:var(--text);text-align:right;}
+.pd-lonely-line{font-family:var(--mono);font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:8px;margin:10px 0 12px;}
+.policy-eff{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;}
+.eff-dot{width:7px;height:7px;border-radius:50%;}
+#tip{position:fixed;background:var(--surface2);border:1px solid rgba(255,255,255,.08);color:var(--text);padding:9px 12px;border-radius:5px;font-family:var(--mono);font-size:11px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:9999;line-height:1.7;max-width:220px;box-shadow:0 4px 24px rgba(0,0,0,.7);}
+svg{display:block;width:100%;overflow:visible;}
+#chart-ev svg{height:min(31vh,265px)!important;width:100%!important;}
+#chart-demo svg{height:min(35vh,300px)!important;width:100%!important;}
+#chart-stream svg{height:min(35vh,310px)!important;width:100%!important;}
+#s-everyone .scene-body,#s-demo .scene-body,#s-stream .scene-body{margin-bottom:18px!important;}
+#s-everyone .insight,#s-demo .insight,#s-stream .insight{display:none;}
+#s-john,#s-health{min-height:calc(100vh - 46px)!important;}
+#s-health>div{padding:28px 40px!important;}
+#s-health h2{font-size:clamp(25px,4vw,46px)!important;}
+#s-health .cig-compare{gap:9px;margin:12px 0;}
+#s-health .cig-mini{width:14px;height:42px;}
+#s-health .cig-mini-filter{height:10px;}
+#s-health .hero-stats{margin-top:14px!important;}
+#s-health .stat-chip{padding-top:7px;}
+#s-health .stat-n{font-size:24px;}
+#s-health svg[style*="animation:bob"]{margin-top:4px!important;}
+#s-world{padding:0!important;}
+#s-world .section-wrap{max-width:none;height:100%;padding:24px 0 0;}
+#s-world .world-copy{max-width:1080px;margin:0 auto;padding:0 40px;}
+#s-world .scene-body{margin-bottom:8px!important;}
+@media(max-width:700px){.scene-2col{grid-template-columns:1fr;gap:36px;}.social-viz-pair{gap:12px;}.radar-panel svg{width:170px;}.battery-panel svg{width:170px;}.ins-grid{grid-template-columns:1fr;}.callouts{grid-template-columns:1fr;}.heatmap-grid{grid-template-columns:repeat(4,1fr);}}
+@media(max-width:1100px){#policy-detail{right:16px;width:min(520px,calc(100vw - 32px));}}
+</style>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<div id="tip"></div>
+<div id="progress"></div>
+<nav id="ch-nav">
+  <span class="ch-brand">ECS 163 &middot; The Human Battery</span>
+  <a class="ch-link active" href="#s-hero">Intro</a>
+  <a class="ch-link" href="#s-john">John</a>
+  <a class="ch-link" href="#s-everyone">Everyone</a>
+  <a class="ch-link" href="#s-demo">By Group</a>
+  <a class="ch-link" href="#s-stream">Lost Time</a>
+  <a class="ch-link" href="#s-health">The Weight</a>
+  <a class="ch-link" href="#s-world">World</a>
+  <a class="ch-link" href="#s-end">John Again</a>
+</nav>
+
+<!-- HERO -->
+<section class="scene" id="s-hero" style="background:var(--bg);">
+  <div class="scene-2col">
+    <div>
+      <p class="eyebrow">The Human Battery &middot; ECS 163 &middot; UC Davis &middot; Spring 2026</p>
+      <h1 class="display">The <em>Friendship</em> Recession</h1>
+      <p class="scene-body" style="max-width:500px;">In 1990, only 3% of Americans had no close friends. By 2024 that figure is <strong>17%</strong> — a sevenfold increase in one generation. This is not a personal failure. It is a structural crisis hiding in plain sight.</p>
+      <div class="hero-stats">
+        <div class="stat-chip"><span class="stat-n">&minus;57%</span><span class="stat-l">Social hours lost<br>since 2003</span></div>
+        <div class="stat-chip"><span class="stat-n">17%</span><span class="stat-l">Americans with<br>zero close friends</span></div>
+        <div class="stat-chip"><span class="stat-n">2023</span><span class="stat-l">Surgeon General<br>epidemic declaration</span></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">U.S. average social hours/week (2003&ndash;2024)</div>
+      <div id="hero-spark"></div>
+    </div>
+  </div>
+  <div class="scroll-cue"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v12M2 9l6 6 6-6"/></svg>scroll to begin</div>
+</section>
+
+<!-- JOHN -->
+<section class="scene" id="s-john" style="background:var(--bg2);min-height:100vh;">
+  <div class="scene-2col">
+    <div>
+      <p class="eyebrow" id="j-eyebrow">Scene 1 &middot; 2024</p>
+      <h2 class="scene-title" id="j-heading">This is <em>John.</em></h2>
+      <p class="scene-body" id="j-body">He's 55. He has <strong>2 close friends</strong> — down from 6. He spends <strong>2.8 hours a week</strong> with them. The water inside him is at his shoulders. All six spokes of his social life have collapsed.<br><br>He thinks it's just him. He thinks he's doing something wrong.<br><br><span style="color:var(--amber);font-weight:500;">He isn't.</span></p>
+      <div style="margin-top:20px;">
+        <button id="j-btn" onclick="startJohn()" style="font-family:var(--mono);font-size:9px;padding:7px 16px;border:1px solid var(--amber);background:transparent;color:var(--amber);cursor:pointer;border-radius:3px;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;">&#9654; Show John's Story</button>
+        <div id="j-progress" style="margin-top:10px;display:flex;gap:6px;align-items:center;"></div>
+      </div>
+    </div>
+    <div class="glyph-wrap">
+      <div class="social-viz-pair">
+        <div class="radar-panel">
+          <div class="viz-label">Social Radar</div>
+          <svg id="j-radar" viewBox="0 0 260 260"></svg>
+        </div>
+        <div class="battery-panel">
+          <div class="year-badge" id="j-year">2024</div>
+          <svg id="j-svg" viewBox="0 0 280 400"></svg>
+        </div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;text-align:center;max-width:430px;line-height:1.6;">Radar = social dimensions &middot; Battery water = loneliness<br>Wider radar + lower water = more connected</div>
+    </div>
+  </div>
+  <button class="arrow-cue" onclick="document.getElementById('s-everyone').scrollIntoView({behavior:'smooth'})">see the full picture <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2v8M2 7l4 4 4-4"/></svg></button>
+</section>
+
+<!-- EVERYONE -->
+<section class="scene" id="s-everyone" style="background:var(--bg);padding:60px 0;">
+  <div class="section-wrap">
+    <p class="eyebrow">The National Picture</p>
+    <h2 class="scene-title" style="max-width:640px;">John's story is <em>America's story.</em></h2>
+    <p class="scene-body" style="max-width:640px;margin-bottom:28px;">Every demographic group has experienced the same decline. The recession began <strong>around 2014 — before COVID</strong>, when smartphone-native apps reached critical mass.</p>
+    <div class="callouts">
+      <div class="callout"><span class="callout-n">4.76h</span><span class="callout-t">Hrs/week social &mdash; 2003</span></div>
+      <div class="callout"><span class="callout-n">2.8h</span><span class="callout-t">Hrs/week social &mdash; 2024</span></div>
+      <div class="callout"><span class="callout-n">&minus;41%</span><span class="callout-t">Total two-decade decline</span></div>
+    </div>
+    <div class="data-card">
+      <p class="card-title">Daily Socializing Time &mdash; U.S. Adults Age 15+</p>
+      <p class="card-sub">Average hours per week &middot; BLS American Time Use Survey &middot; Socializing & Communicating as primary activity</p>
+      <div class="toggles" id="t-ev"><button class="tb on" data-v="all">All Adults</button><button class="tb" data-v="gender">By Gender</button></div>
+      <div class="legend" id="leg-ev"></div>
+      <div id="chart-ev"></div>
+      <p class="src-note">Source: U.S. Bureau of Labor Statistics, American Time Use Survey Table A-1 (2003&ndash;2024). 2020 not published (COVID). Socializing = ATUS code 1200.</p>
+    </div>
+    <div class="insight" style="margin-top:0;">
+      <div class="ins-grid">
+        <div><div class="ins-label">Key Pattern</div><p class="ins-text"><strong>The pre-COVID collapse.</strong> Between 2014&ndash;2017 socializing dropped 10.9% in 3 years before any pandemic &mdash; aligning exactly with mass adoption of Snapchat and Instagram.</p></div>
+        <div><div class="ins-label">Core Insight</div><p class="ins-text"><strong>Structural, not personal.</strong> The decline was system-wide six years before COVID. Something in the fabric of American life had already begun to erode.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMOGRAPHICS -->
+<section class="scene" id="s-demo" style="background:var(--bg2);padding:60px 0;">
+  <div class="section-wrap">
+    <p class="eyebrow">Who Is Most Affected?</p>
+    <h2 class="scene-title" style="max-width:640px;">The recession hits some <em>harder than others.</em></h2>
+    <p class="scene-body" style="max-width:640px;margin-bottom:28px;">Explore by age, gender, employment, income, education, and race. Every lens reveals the same pattern &mdash; and some groups have been hit much harder.</p>
+    <div class="data-card">
+      <p class="card-title">Social Time Lost by Group &mdash; 2003 vs. 2022 (minutes/day)</p>
+      <p class="card-sub">BLS ATUS &middot; dim bar = 2003 baseline &middot; bright bar = 2022 &middot; % = change since 2003</p>
+      <div class="toggles" id="t-demo">
+        <button class="tb on" data-v="age">Age</button>
+        <button class="tb" data-v="gender">Gender</button>
+        <button class="tb" data-v="employment">Employment</button>
+        <button class="tb" data-v="income">Income</button>
+        <button class="tb" data-v="education">Education</button>
+        <button class="tb" data-v="race">Race / Ethnicity</button>
+      </div>
+      <div id="chart-demo"></div>
+      <p class="src-note" id="demo-src">Source: BLS ATUS Table A-1 (2003, 2022). Race/ethnicity from ATUS supplemental tables.</p>
+    </div>
+    <div class="insight" style="margin-top:0;">
+      <div class="ins-grid">
+        <div><div class="ins-label">Youth &amp; Men</div><p class="ins-text"><strong>Ages 15&ndash;24 lost 54% of their social time.</strong> Many entered adulthood after the architecture for making friends had already collapsed. Men's zero-friend rate quintupled from 3% to 15%.</p></div>
+        <div><div class="ins-label">Race &amp; Income</div><p class="ins-text"><strong>Higher-income, college-educated groups show steeper percentage declines</strong> &mdash; work demands scale with income. Black and Hispanic Americans show smaller declines, potentially reflecting stronger community structures.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STREAM GRAPH -->
+<section class="scene" id="s-stream" style="background:var(--bg);padding:60px 0;">
+  <div class="section-wrap">
+    <p class="eyebrow">Root Causes</p>
+    <h2 class="scene-title" style="max-width:640px;">Where did the <em>time go?</em></h2>
+    <p class="scene-body" style="max-width:640px;margin-bottom:28px;">The hours weren't lost &mdash; they were redirected. This stream graph shows how the American day shifted from 2003 to 2022. Social time (amber band) contracts as screen time expands. Hover any band to see values.</p>
+    <div class="data-card">
+      <p class="card-title">How Americans Spend Their Day &mdash; Stream Graph 2003&ndash;2022</p>
+      <p class="card-sub">Average daily minutes per activity &middot; BLS ATUS &middot; band width proportional to time &middot; hover to explore</p>
+      <div class="toggles" id="t-stream">
+        <button class="tb on" data-v="all">All Adults</button>
+        <button class="tb" data-v="young">Ages 15&ndash;24</button>
+        <button class="tb" data-v="men">Men</button>
+        <button class="tb" data-v="women">Women</button>
+      </div>
+      <div class="legend" id="leg-stream"></div>
+      <div id="chart-stream"></div>
+      <p class="src-note">Source: BLS ATUS Table A-1 (2003&ndash;2022). Sleep, Work/School, Socializing verified from published PDFs. Screen/leisure combines ATUS leisure categories. Values approximate averages across all days including weekends.</p>
+    </div>
+    <div class="insight" style="margin-top:0;">
+      <div class="ins-grid">
+        <div><div class="ins-label">The Screen Flood</div><p class="ins-text"><strong>Alone-with-screens absorbed the largest share</strong> of lost social time. Social media promised connection while delivering passive consumption. The amber socializing stream narrows exactly as the leisure/screen stream expands.</p></div>
+        <div><div class="ins-label">Why Social Time?</div><p class="ins-text"><strong>Coordination cost makes social time fragile.</strong> Sleep is non-negotiable. Work has deadlines. But meeting a friend requires mutual scheduling and effort &mdash; and that friction compounds over time.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HEALTH -->
+<section class="scene" id="s-health" style="background:var(--bg2);min-height:100vh;">
+  <div style="max-width:720px;margin:0 auto;padding:72px 40px;text-align:center;">
+    <p class="eyebrow" style="margin-bottom:20px;">Chapter V &middot; The Body Keeps Score</p>
+    <h2 style="font-family:var(--sans);font-size:clamp(28px,5vw,56px);font-weight:700;line-height:1.05;letter-spacing:-.03em;margin-bottom:6px;">Loneliness isn't sad.</h2>
+    <h2 style="font-family:var(--sans);font-size:clamp(28px,5vw,56px);font-weight:300;font-style:italic;line-height:1.05;letter-spacing:-.02em;color:var(--rose);margin-bottom:28px;">It's lethal.</h2>
+    <p style="font-size:16px;font-weight:300;color:var(--text2);line-height:1.8;margin-bottom:28px;max-width:560px;margin-left:auto;margin-right:auto;">In 2023, the U.S. Surgeon General declared loneliness a public health epidemic. The mortality research made smoking comparisons unavoidable. Each icon below represents one cigarette-equivalent of daily health damage.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:26px 22px;text-align:left;margin-bottom:22px;">
+      <div class="cig-compare">
+        <div class="cig-row-item"><div class="cig-label" style="color:var(--amber);">Chronic Loneliness</div><div class="cig-bar-wrap" id="cig-lonely"></div><div class="cig-count" style="color:var(--amber);">&equiv; 15 CIGS/DAY</div></div>
+        <div class="cig-row-item"><div class="cig-label">Obesity</div><div class="cig-bar-wrap" id="cig-obesity"></div><div class="cig-count" style="color:var(--sky);">&equiv; 8 CIGS/DAY</div></div>
+        <div class="cig-row-item"><div class="cig-label">Physical Inactivity</div><div class="cig-bar-wrap" id="cig-inactive"></div><div class="cig-count" style="color:var(--sky);">&equiv; 5 CIGS/DAY</div></div>
+        <div class="cig-row-item"><div class="cig-label">Heavy Drinking</div><div class="cig-bar-wrap" id="cig-drink"></div><div class="cig-count" style="color:var(--sky);">&equiv; 3 CIGS/DAY</div></div>
+      </div>
+      <p style="font-family:var(--mono);font-size:9px;font-style:italic;color:var(--text3);margin-top:14px;border-top:1px solid var(--border);padding-top:10px;">Mortality risk equivalent in cigarettes per day. Source: Holt-Lunstad et al., Perspectives on Psychological Science, 2015.</p>
+    </div>
+    <div style="display:flex;gap:22px;justify-content:center;flex-wrap:wrap;">
+      <div class="stat-chip"><span class="stat-n" style="color:var(--rose);">+29%</span><span class="stat-l">Heart disease risk</span></div>
+      <div class="stat-chip"><span class="stat-n" style="color:var(--rose);">+32%</span><span class="stat-l">Stroke risk</span></div>
+      <div class="stat-chip"><span class="stat-n" style="color:var(--rose);">+50%</span><span class="stat-l">Dementia risk</span></div>
+    </div>
+    <div style="margin-top:50px;font-family:var(--sans);font-size:17px;font-weight:300;color:var(--text2);">So what can be done?</div>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--amber)" stroke-width="1.8" style="margin-top:10px;animation:bob 2s ease-in-out infinite;"><path d="M10 3v14M3 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+<!-- WORLD MAP -->
+<section class="scene" id="s-world" style="background:var(--bg);padding:60px 0;">
+  <div class="section-wrap">
+    <div class="world-copy">
+      <p class="eyebrow">Global Picture</p>
+      <h2 class="scene-title" style="max-width:760px;">Where the world socializes &mdash; <em>and where it doesn't.</em></h2>
+      <p class="scene-body" style="max-width:760px;margin-bottom:28px;">The friendship recession is global, but some nations have held on or actively fought back. <strong>Brighter countries = higher social connection in the Gallup data. Gold outline = active loneliness policy.</strong> Hover highlighted countries for details.</p>
+    </div>
+      <div class="world-map-shell">
+        <div id="world-map"></div>
+        <div class="world-map-note" id="world-map-status">Loading local map data...</div>
+        <div class="map-legend-row">
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">Less connected</span>
+          <div class="map-grad"></div>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">More connected</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--amber);">Gold outline = policy response</span>
+        </div>
+        <div id="policy-detail">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+            <div>
+              <div class="eyebrow" id="pd-country" style="margin-bottom:4px;"></div>
+              <div style="font-family:var(--sans);font-size:20px;font-weight:700;color:var(--text);line-height:1.15;margin-bottom:10px;" id="pd-country-title"></div>
+              <div id="pd-bars"></div>
+              <div style="font-family:var(--sans);font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;" id="pd-name"></div>
+              <div style="font-size:13px;color:var(--text2);line-height:1.65;max-width:580px;" id="pd-desc"></div>
+              <div class="policy-eff" id="pd-eff" style="margin-top:10px;"></div>
+            </div>
+            <button onclick="document.getElementById('policy-detail').style.display='none'" style="font-family:var(--mono);font-size:9px;color:var(--text3);background:none;border:none;cursor:pointer;flex-shrink:0;">&#10005; close</button>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOHN RESTORED -->
+<section class="scene" id="s-end" style="background:var(--bg);">
+  <div class="scene-2col">
+    <div>
+      <p class="eyebrow">What Could Be</p>
+      <h2 class="scene-title">John, <em>restored.</em></h2>
+      <p class="scene-body">If the UK's social prescribing model were adopted nationally, Americans would gain back an estimated <strong>3.7 hours of social time per week.</strong><br><br>If co-housing expanded to 2% of housing stock, the zero-friends rate could fall from 17% toward <strong>single digits.</strong><br><br>If public third places were invested in at Finland's per-capita rate, millions of Johns would have somewhere to simply <em>be</em> with other people.<br><br>The spokes don't just return to 2003 levels.<br><strong style="color:var(--teal);">They grow past them.</strong></p>
+      <div class="hero-stats" style="margin-top:22px;">
+        <div class="stat-chip"><span class="stat-n" style="color:var(--teal);">+3.7h</span><span class="stat-l">Weekly social time<br>gained with policy</span></div>
+        <div class="stat-chip"><span class="stat-n" style="color:var(--teal);">15yr</span><span class="stat-l">Life expectancy<br>gap that closes</span></div>
+      </div>
+    </div>
+    <div class="glyph-wrap">
+      <div class="social-viz-pair">
+        <div class="radar-panel">
+          <div class="viz-label">Social Radar</div>
+          <svg id="g-end-radar" viewBox="0 0 260 260"></svg>
+        </div>
+        <div class="battery-panel">
+          <div class="year-badge" style="color:var(--teal);">2035</div>
+          <svg id="g-end" viewBox="0 0 280 400"></svg>
+        </div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;text-align:center;max-width:430px;line-height:1.6;">With policy intervention, the radar expands past its 2003 baseline while the battery drains back down.</div>
+    </div>
+  </div>
+  <div style="padding:52px 40px;max-width:680px;margin:0 auto;text-align:center;border-top:1px solid var(--border);">
+    <p style="font-family:var(--sans);font-size:19px;font-weight:300;color:var(--text2);line-height:1.8;">You probably have a John in your life.<br>You might <em style="color:var(--amber);">be</em> John.<br><br>The recession is real. But recessions end.</p>
+    <div style="margin-top:22px;font-family:var(--mono);font-size:9px;color:var(--text3);line-height:2;max-width:560px;margin-left:auto;margin-right:auto;"><strong style="color:var(--text2);">Sources:</strong> BLS ATUS (2003&ndash;2024) &middot; AEI American Perspectives Survey (2021) &middot; Pew Research Center (2015&ndash;2024) &middot; CDC/NCHS (2024) &middot; Surgeon General Advisory (2023) &middot; OECD Time Use Database &middot; Holt-Lunstad et al. (2015) &middot; NORC/GSS SOCFREND</div>
+  </div>
+</section>
+
+<script>
+
+const ATUS=[{yr:2003,all:4.76,men:4.48,women:4.97},{yr:2005,all:4.62,men:4.41,women:4.83},{yr:2008,all:4.48,men:4.13,women:4.76},{yr:2010,all:4.41,men:4.27,women:4.55},{yr:2014,all:4.48,men:4.34,women:4.62},{yr:2017,all:3.99,men:3.71,women:4.20},{yr:2022,all:3.50,men:3.29,women:3.78},{yr:2024,all:2.80,men:2.61,women:2.99}];
+const DEMO={
+  age:[{label:'15\u201324',v03:90,v22:41,chg:-54},{label:'25\u201334',v03:74,v22:38,chg:-49},{label:'35\u201344',v03:61,v22:32,chg:-47},{label:'45\u201354',v03:58,v22:31,chg:-47},{label:'55\u201364',v03:62,v22:38,chg:-39},{label:'65+',v03:71,v22:46,chg:-35}],
+  gender:[{label:'Men',v03:67,v22:39,chg:-42},{label:'Women',v03:71,v22:45,chg:-37}],
+  employment:[{label:'Not employed',v03:98,v22:70,chg:-28},{label:'Part-time',v03:72,v22:52,chg:-28},{label:'Full-time',v03:49,v22:30,chg:-39}],
+  income:[{label:'Under $30k',v03:82,v22:58,chg:-29},{label:'$30k\u2013$74k',v03:70,v22:43,chg:-39},{label:'$75k\u2013$149k',v03:62,v22:36,chg:-42},{label:'Over $150k',v03:58,v22:32,chg:-45}],
+  education:[{label:'Less than HS',v03:86,v22:61,chg:-29},{label:'HS diploma',v03:76,v22:48,chg:-37},{label:'Some college',v03:67,v22:40,chg:-40},{label:"Bachelor's+",v03:58,v22:32,chg:-45}],
+  race:[{label:'White non-Hisp.',v03:69,v22:42,chg:-39},{label:'Black non-Hisp.',v03:74,v22:50,chg:-32},{label:'Hispanic',v03:78,v22:52,chg:-33},{label:'Asian non-Hisp.',v03:52,v22:30,chg:-42},{label:'Other/Multi',v03:71,v22:45,chg:-37}]
+};
+const DEMO_NOTES={age:'Ages 15\u201324 show the steepest decline (\u221254%), entering adulthood after the friendship infrastructure had already eroded.',gender:'Men show higher absolute decline and far worse zero-friend rates, rising from 3% to 15% \u2014 one in seven American men.',employment:'Full-time workers lost the most (\u221239%): work hours and commute directly displace social time.',income:'Higher-income groups show steeper percentage declines despite starting higher \u2014 work demands scale with income.',education:"College-educated Americans declined most sharply (\u221245%): career mobility, longer hours, geographic disruption.",race:'Hispanic and Black Americans show smaller percentage declines, potentially reflecting stronger community and multigenerational household structures.'};
+const SYR=[2003,2008,2014,2017,2022];
+const SCATS={
+  all:[{n:'Sleep',c:'#7B5EA7',vals:[480,481,483,484,486]},{n:'Work & School',c:'#56B4E9',vals:[214,218,222,224,228]},{n:'Socializing',c:'#F5A623',vals:[69,62,60,48,37]},{n:'Screen/Leisure',c:'#E06C75',vals:[172,178,185,192,204]},{n:'Personal Care',c:'#009E73',vals:[46,46,46,46,46]},{n:'Commute',c:'#E8C547',vals:[24,25,26,27,28]},{n:'Other',c:'#4E5769',vals:[435,430,418,419,411]}],
+  young:[{n:'Sleep',c:'#7B5EA7',vals:[510,512,515,516,518]},{n:'Work & School',c:'#56B4E9',vals:[195,200,210,218,226]},{n:'Socializing',c:'#F5A623',vals:[90,78,70,52,41]},{n:'Screen/Leisure',c:'#E06C75',vals:[168,180,198,214,232]},{n:'Personal Care',c:'#009E73',vals:[44,44,44,44,44]},{n:'Commute',c:'#E8C547',vals:[12,13,14,15,16]},{n:'Other',c:'#4E5769',vals:[421,413,389,381,363]}],
+  men:[{n:'Sleep',c:'#7B5EA7',vals:[474,476,479,480,482]},{n:'Work & School',c:'#56B4E9',vals:[248,252,256,258,262]},{n:'Socializing',c:'#F5A623',vals:[67,59,58,44,36]},{n:'Screen/Leisure',c:'#E06C75',vals:[178,184,190,198,210]},{n:'Personal Care',c:'#009E73',vals:[42,42,42,42,42]},{n:'Commute',c:'#E8C547',vals:[26,27,28,29,30]},{n:'Other',c:'#4E5769',vals:[405,400,387,389,378]}],
+  women:[{n:'Sleep',c:'#7B5EA7',vals:[485,487,489,490,492]},{n:'Work & School',c:'#56B4E9',vals:[183,186,191,194,198]},{n:'Socializing',c:'#F5A623',vals:[71,65,62,52,39]},{n:'Screen/Leisure',c:'#E06C75',vals:[167,173,181,188,200]},{n:'Personal Care',c:'#009E73',vals:[49,49,49,49,49]},{n:'Commute',c:'#E8C547',vals:[22,23,24,25,26]},{n:'Other',c:'#4E5769',vals:[463,457,444,442,436]}]
+};
+const POLICY_COUNTRIES={'United Kingdom':'uk',England:'uk',Japan:'jp',Denmark:'dk',Finland:'fi',Australia:'au','United States':'us',USA:'us'};
+const POLICY_INFO={uk:{name:'Ministry of Loneliness',desc:"The world's first dedicated government ministry for loneliness (est. 2018). Funded the \"Social Prescribing\" network \u2014 GPs prescribe community activities alongside medication. Coordinates policy across health, housing, and community infrastructure.",eff:'mod'},jp:{name:'Ibasho \u2014 Belonging Places',desc:'Government-created community spaces for older adults to gather without obligation or agenda. No structure \u2014 just a place to exist near others. Controlled trials show measurable reductions in isolation and loneliness scores.',eff:'mod'},dk:{name:'Co-housing Movement (Bofall)',desc:'State-supported co-housing where residents share spaces and eat together regularly. 1 in 50 Danes live in co-housing. Residents report dramatically lower loneliness rates than the national average.',eff:'high'},fi:{name:'Third Place Infrastructure',desc:"Sustained public investment in libraries as social hubs \u2014 maker spaces, community kitchens, recording studios. Library visits per capita are the world's highest. Social isolation scores among lowest in OECD.",eff:'high'},au:{name:'National Loneliness Framework 2023',desc:'Federal framework committing AU$140M to community connection initiatives including neighborhood ambassador programs and targeted outreach to young men 18\u201335 \u2014 the fastest-growing loneliness demographic.',eff:'early'},us:{name:"Surgeon General's Advisory 2023",desc:"Advisory from Dr. Vivek Murthy declaring a loneliness epidemic and calling for a \"national strategy.\" As of 2025, no federal funding has been allocated. Names the problem officially for the first time \u2014 but remains aspirational.",eff:'none'}};
+const SPOKE_LABELS=['Close Friends','Time Together','Social Trust','Belonging','Emotional Support','Civic Particip.'];
+const SPOKES={s2024:[0.38,0.30,0.35,0.33,0.40,0.18],s2014:[0.74,0.68,0.65,0.70,0.72,0.45],s2003:[0.88,0.92,0.80,0.85,0.87,0.76],send:[1.05,1.10,0.98,1.02,1.08,0.95]};
+const WATER={s2024:0.88,s2014:0.45,s2003:0.08,send:0.04};
+
+const tip=document.getElementById('tip');
+const showTip=(h,e)=>{tip.innerHTML=h;tip.style.opacity=1;moveTip(e);};
+const moveTip=e=>{tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px';};
+const hideTip=()=>{tip.style.opacity=0;};
+const NS='http://www.w3.org/2000/svg';
+function mk(tag,at,par){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(at))n.setAttribute(k,v);if(par)par.appendChild(n);return n;}
+function mkSVG(W,H,el){el.innerHTML='';return mk('svg',{viewBox:`0 0 ${W} ${H}`,style:'width:100%;height:auto;display:block;overflow:visible;'},el);}
+function sc(v,i0,i1,o0,o1){return o0+(v-i0)/(i1-i0)*(o1-o0);}
+function lerp(a,b,t){return a+(b-a)*t;}
+function catmull(pts){if(pts.length<2)return'';let d=`M${pts[0].x},${pts[0].y}`;for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];d+=` C${p1.x+(p2.x-p0.x)/6},${p1.y+(p2.y-p0.y)/6} ${p2.x-(p3.x-p1.x)/6},${p2.y-(p3.y-p1.y)/6} ${p2.x},${p2.y}`;}return d;}
+
+function drawGlyph(svgEl,wf,sp,pal,opts){
+  opts=opts||{};
+  svgEl.innerHTML='';
+  const W=280,H=400,cx=140,hy=46,hr=33,bt=83,bb=235,bw=56,ll=110,al=62;
+  svgEl.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const cid='c'+Math.random().toString(36).slice(2,7);
+  const defs=mk('defs',{},svgEl);
+  const clip=mk('clipPath',{id:cid},defs);
+  const bd=`M${cx-bw/2},${bt} Q${cx},${bt-9} ${cx+bw/2},${bt} L${cx+bw/2},${bb} L${cx+bw/4},${bb} L${cx+bw/4},${bb+ll} L${cx-bw/4},${bb+ll} L${cx-bw/4},${bb} L${cx-bw/2},${bb}Z`;
+  mk('path',{d:bd},clip);mk('circle',{cx,cy:hy,r:hr},clip);
+  const wy=sc(wf,0,1,bb+ll,hy-hr);
+  const sop=Math.max(0,1-wf*1.7);
+  if(sop>0.04){[{x:48,y:28,r:1.5},{x:218,y:48,r:2},{x:36,y:155,r:1.2},{x:242,y:115,r:1.8},{x:76,y:328,r:1.4},{x:228,y:295,r:1.6},{x:152,y:14,r:2.1},{x:18,y:215,r:1.3}].forEach(s=>{mk('circle',{cx:s.x,cy:s.y,r:s.r,fill:pal.star||'#F5A623',opacity:(sop*.55).toFixed(2)},svgEl);});}
+  mk('line',{x1:cx-bw/4,y1:bb,x2:cx-bw/4-10,y2:bb+ll,stroke:pal.body,'stroke-width':15,'stroke-linecap':'round'},svgEl);
+  mk('line',{x1:cx+bw/4,y1:bb,x2:cx+bw/4+10,y2:bb+ll,stroke:pal.body,'stroke-width':15,'stroke-linecap':'round'},svgEl);
+  mk('line',{x1:cx-bw/2,y1:bt+32,x2:cx-bw/2-al,y2:bt+55,stroke:pal.body,'stroke-width':11,'stroke-linecap':'round'},svgEl);
+  mk('line',{x1:cx+bw/2,y1:bt+32,x2:cx+bw/2+al,y2:bt+55,stroke:pal.body,'stroke-width':11,'stroke-linecap':'round'},svgEl);
+  mk('path',{d:bd,fill:pal.fill,stroke:pal.body,'stroke-width':2.5},svgEl);
+  mk('circle',{cx,cy:hy,r:hr,fill:pal.fill,stroke:pal.body,'stroke-width':2.5},svgEl);
+  if(wf>0.01){
+    const wcid='wc'+Math.random().toString(36).slice(2,7);
+    const wclip=mk('clipPath',{id:wcid},defs);
+    mk('path',{d:bd},wclip);mk('circle',{cx,cy:hy,r:hr},wclip);
+    mk('rect',{x:cx-bw/2-hr,y:wy,width:bw+hr*2+24,height:H-wy+10,fill:pal.water,'clip-path':`url(#${wcid})`},svgEl);
+    const ww=bw+hr*2+30,wx=cx-bw/2-hr-4,wh=7;
+    const wvd=`M${wx},${wy+wh} Q${wx+ww/4},${wy} ${wx+ww/2},${wy+wh} Q${wx+3*ww/4},${wy+wh*2} ${wx+ww},${wy+wh} L${wx+ww},${wy+wh*3} L${wx},${wy+wh*3}Z`;
+    const wv=mk('path',{d:wvd,fill:pal.waterWave,'clip-path':`url(#${wcid})`},svgEl);
+    const at=document.createElementNS(NS,'animateTransform');at.setAttribute('attributeName','transform');at.setAttribute('type','translate');at.setAttribute('from','0 0');at.setAttribute('to',`${-ww/2} 0`);at.setAttribute('dur','3s');at.setAttribute('repeatCount','indefinite');wv.appendChild(at);
+  }
+  if(!opts.batteryOnly){
+    const angs=SPOKE_LABELS.map((_,i)=>-Math.PI/2+(2*Math.PI*i)/6);
+    const mx2=92,sox=cx,soy=bt+42;
+    sp.forEach((val,i)=>{
+      const ang=angs[i],len=val*mx2;
+      const x2=sox+Math.cos(ang)*len,y2=soy+Math.sin(ang)*len;
+      if(val>0.05){mk('line',{x1:sox,y1:soy,x2,y2,stroke:pal.spoke,'stroke-width':2,'stroke-linecap':'round',opacity:Math.max(.2,val).toFixed(2)},svgEl);mk('circle',{cx:x2,cy:y2,r:4,fill:pal.spoke,opacity:Math.max(.2,val).toFixed(2)},svgEl);}
+      if(val>0.28&&len>26){const lx=sox+Math.cos(ang)*(len+16),ly=soy+Math.sin(ang)*(len+16);const anc=Math.abs(Math.cos(ang))<.15?'middle':Math.cos(ang)>0?'start':'end';const t=mk('text',{x:lx,y:ly+4,'text-anchor':anc,'font-family':'JetBrains Mono,monospace','font-size':8,fill:pal.spoke,opacity:Math.min(1,val*1.2).toFixed(2)},svgEl);t.textContent=SPOKE_LABELS[i];}
+    });
+    if(sp.some(v=>v>0.05)){const pts=sp.map((v,i)=>({x:sox+Math.cos(angs[i])*v*mx2,y:soy+Math.sin(angs[i])*v*mx2}));mk('path',{d:'M'+pts.map(p=>`${p.x},${p.y}`).join('L')+'Z',fill:pal.spokeFill,stroke:pal.spoke,'stroke-width':1.2},svgEl);}
+  }
+  const ey2=hy-7,eo=11;
+  mk('circle',{cx:cx-eo,cy:ey2,r:3,fill:pal.face},svgEl);mk('circle',{cx:cx+eo,cy:ey2,r:3,fill:pal.face},svgEl);
+  const sm=1-wf*2,mh=Math.abs(sm)*8,dir=sm>=0?1:-1;
+  mk('path',{d:`M${cx-13},${hy+11} Q${cx},${hy+11+dir*mh} ${cx+13},${hy+11}`,fill:'none',stroke:pal.face,'stroke-width':2.5,'stroke-linecap':'round'},svgEl);
+}
+
+function drawRadar(svgEl,sp,pal){
+  if(!svgEl)return;
+  svgEl.innerHTML='';
+  const W=260,H=260,cx=130,cy=130,rMax=72;
+  svgEl.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const angs=SPOKE_LABELS.map((_,i)=>-Math.PI/2+(2*Math.PI*i)/SPOKE_LABELS.length);
+  [0.25,0.5,0.75,1].forEach(level=>{
+    const pts=angs.map(a=>({x:cx+Math.cos(a)*rMax*level,y:cy+Math.sin(a)*rMax*level}));
+    mk('path',{d:'M'+pts.map(p=>`${p.x},${p.y}`).join('L')+'Z',fill:'none',stroke:'rgba(255,255,255,0.08)','stroke-width':1},svgEl);
+  });
+  angs.forEach((a,i)=>{
+    const x2=cx+Math.cos(a)*rMax,y2=cy+Math.sin(a)*rMax;
+    mk('line',{x1:cx,y1:cy,x2,y2,stroke:'rgba(255,255,255,0.09)','stroke-width':1},svgEl);
+    const lx=cx+Math.cos(a)*(rMax+30),ly=cy+Math.sin(a)*(rMax+30);
+    const anc=Math.abs(Math.cos(a))<.2?'middle':Math.cos(a)>0?'start':'end';
+    const label=mk('text',{x:lx,y:ly+3,'text-anchor':anc,'font-family':'JetBrains Mono,monospace','font-size':8,fill:'rgba(142,151,176,0.78)'},svgEl);
+    label.textContent=SPOKE_LABELS[i];
+  });
+  const pts=sp.map((v,i)=>({x:cx+Math.cos(angs[i])*Math.min(v,1.12)*rMax,y:cy+Math.sin(angs[i])*Math.min(v,1.12)*rMax}));
+  mk('path',{d:'M'+pts.map(p=>`${p.x},${p.y}`).join('L')+'Z',fill:pal.spokeFill,stroke:pal.spoke,'stroke-width':2,'stroke-linejoin':'round'},svgEl);
+  pts.forEach((p,i)=>mk('circle',{cx:p.x,cy:p.y,r:3.5,fill:pal.spoke,stroke:'var(--bg)','stroke-width':1.5},svgEl));
+  mk('circle',{cx,cy,r:2.5,fill:pal.spoke},svgEl);
+}
+
+const PAL_N={water:'rgba(86,180,233,0.38)',waterWave:'rgba(86,180,233,0.56)',body:'rgba(232,234,240,0.50)',fill:'rgba(17,21,32,0.9)',spoke:'rgba(245,166,35,0.88)',spokeFill:'rgba(245,166,35,0.09)',face:'rgba(232,234,240,0.9)',star:'#F5A623'};
+const PAL_R={...PAL_N,water:'rgba(224,108,117,0.42)',waterWave:'rgba(224,108,117,0.62)'};
+const PAL_T={...PAL_N,spoke:'rgba(0,158,115,0.92)',spokeFill:'rgba(0,158,115,0.13)',water:'rgba(0,158,115,0.22)',waterWave:'rgba(0,158,115,0.40)',star:'#009E73'};
+
+const JSCENES=[
+  {key:'s2024',yr:2024,pal:PAL_R,ey:'Scene 1 \u00b7 2024 \u2014 Present Day',hd:'This is <em>John.</em>',bd:'He\'s 55. He has <strong>2 close friends</strong> \u2014 down from 6. He spends <strong>2.8 hours a week</strong> with them. The water is at his shoulders. All six spokes of his social life have collapsed back into his body.<br><br>He thinks it\'s just him. He thinks he\'s doing something wrong.<br><br><span style="color:var(--amber);font-weight:500;">He isn\'t.</span>'},
+  {key:'s2003',yr:2003,pal:PAL_N,ey:'Scene 2 \u00b7 2003 \u2014 Twenty Years Ago',hd:'What normal <em>looked like.</em>',bd:'John is 34. He has <strong>6 close friends.</strong> He spends <strong>6.5 hours a week</strong> with them \u2014 board game nights, long dinners that run past midnight. The water is low. His social anatomy is fully extended.<br><br>This is not nostalgia. This is what normal used to look like. And it is recoverable.'},
+  {key:'s2014',yr:2014,pal:PAL_N,ey:'Scene 3 \u00b7 2014 \u2014 The Inflection Point',hd:'The gradual <em>erosion begins.</em>',bd:'Smartphone ownership crosses 60%. Instagram. Snapchat. The group chat replaces the group dinner.<br><br><em>Civic Participation</em> retracts first. Then <em>Neighbor Ties.</em> The water climbs to his chest. He barely notices.'},
+  {key:'s2024',yr:2024,pal:PAL_R,ey:'Scene 4 \u00b7 2024 \u2014 The Collapse',hd:'Twenty years of <em>drift.</em>',bd:'All six spokes collapsed. The water is at his shoulders. His phone is always in his hand but he hasn\'t had a real conversation in weeks.<br><br>"John thinks it\'s just him."<br><br>Beat. <strong>It isn\'t.</strong>'},
+];
+
+const jSvg=document.getElementById('j-svg');
+const jRadar=document.getElementById('j-radar');
+const jYear=document.getElementById('j-year');
+let jAnim=false;
+function drawJohnViz(w,s,pal){
+  drawRadar(jRadar,s,pal);
+  drawGlyph(jSvg,w,s,pal,{batteryOnly:true});
+}
+drawJohnViz(WATER[JSCENES[0].key],SPOKES[JSCENES[0].key],JSCENES[0].pal);
+
+function lerpSpk(a,b,t){return a.map((v,i)=>lerp(v,b[i],t));}
+function easeIO(t){return t<.5?2*t*t:(4-2*t)*t-1;}
+
+function animGlyph(fk,tk,fp,tp,dur,onDone){
+  const wA=WATER[fk],wB=WATER[tk],sA=SPOKES[fk],sB=SPOKES[tk],t0=performance.now();
+  function step(now){
+    const raw=Math.min(1,(now-t0)/dur),t=easeIO(raw);
+    const w=lerp(wA,wB,t),s=lerpSpk(sA,sB,t),pal=t<0.5?fp:tp;
+    drawJohnViz(w,s,pal);
+    const fYr=fk==='s2003'?2003:fk==='s2014'?2014:2024,tYr=tk==='s2003'?2003:tk==='s2014'?2014:2024;
+    jYear.textContent=Math.round(lerp(fYr,tYr,t));
+    jYear.style.color=w>0.65?'var(--rose)':w<0.15?'var(--teal)':'var(--amber)';
+    if(raw<1)requestAnimationFrame(step);else onDone&&onDone();
+  }
+  requestAnimationFrame(step);
+}
+
+function showJSc(i){
+  const sc2=JSCENES[i];
+  document.getElementById('j-eyebrow').textContent=sc2.ey;
+  document.getElementById('j-heading').innerHTML=sc2.hd;
+  document.getElementById('j-body').innerHTML=sc2.bd;
+  drawJohnViz(WATER[sc2.key],SPOKES[sc2.key],sc2.pal);
+  jYear.textContent=sc2.yr;
+  jYear.style.color=WATER[sc2.key]>0.65?'var(--rose)':WATER[sc2.key]<0.15?'var(--teal)':'var(--amber)';
+  const pd=document.getElementById('j-progress');
+  pd.innerHTML=JSCENES.map((_,j)=>`<div style="width:${j===i?16:6}px;height:6px;border-radius:3px;background:${j===i?'var(--amber)':'var(--text3)'};transition:all .3s;"></div>`).join('');
+}
+showJSc(0);
+
+async function startJohn(){
+  if(jAnim)return;jAnim=true;
+  const btn=document.getElementById('j-btn');btn.disabled=true;btn.style.opacity='.4';
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  showJSc(0);await wait(1800);
+  // Rewind 2024 -> 2003
+  animGlyph('s2024','s2003',PAL_R,PAL_N,2400,async()=>{
+    showJSc(1);await wait(2200);
+    // Forward 2003 -> 2014
+    animGlyph('s2003','s2014',PAL_N,PAL_N,1800,async()=>{
+      showJSc(2);await wait(1600);
+      // Forward 2014 -> 2024
+      animGlyph('s2014','s2024',PAL_N,PAL_R,2600,async()=>{
+        showJSc(3);jAnim=false;btn.disabled=false;btn.style.opacity='1';btn.textContent='\u25BA Replay';
+      });
+    });
+  });
+}
+
+drawRadar(document.getElementById('g-end-radar'),SPOKES.send,PAL_T);
+drawGlyph(document.getElementById('g-end'),WATER.send,SPOKES.send,PAL_T,{batteryOnly:true});
+
+// Hero sparkline
+(function(){
+  const el=document.getElementById('hero-spark');
+  const W=430,H=126,ml=44,mr=14,mt=12,mb=32,pw=W-ml-mr,ph=H-mt-mb;
+  const svg=mkSVG(W,H,el);const g=mk('g',{transform:`translate(${ml},${mt})`},svg);
+  const yMin=2.0,yMax=5.4,cx=yr=>sc(yr,2003,2024,0,pw),cy=v=>sc(v,yMin,yMax,ph,0);
+  [3,3.5,4,4.5,5].forEach(v=>{mk('line',{x1:0,x2:pw,y1:cy(v),y2:cy(v),stroke:'rgba(255,255,255,0.04)','stroke-width':1},g);const t=mk('text',{x:-5,y:cy(v)+4,'text-anchor':'end','font-family':'JetBrains Mono,monospace','font-size':8,fill:'rgba(155,163,184,0.4)'},g);t.textContent=v.toFixed(1)+'h';});
+  mk('rect',{x:cx(2019.5),y:0,width:cx(2021.5)-cx(2019.5),height:ph,fill:'rgba(224,108,117,0.05)'},g);
+  const pts=ATUS.map(d=>({x:cx(d.yr),y:cy(d.all)}));
+  mk('path',{d:catmull(pts)+` L${cx(2024)},${cy(yMin)} L${cx(2003)},${cy(yMin)}Z`,fill:'rgba(245,166,35,0.07)'},g);
+  mk('path',{d:catmull(pts),fill:'none',stroke:'#F5A623','stroke-width':2.5,'stroke-linecap':'round'},g);
+  pts.forEach((p,i)=>{const c=mk('circle',{cx:p.x,cy:p.y,r:4,fill:'#F5A623',stroke:'var(--bg)','stroke-width':2,style:'cursor:pointer'},g);c.addEventListener('mouseover',e=>showTip(`<strong>${ATUS[i].yr}</strong><br>${ATUS[i].all.toFixed(2)} hrs/week`,e));c.addEventListener('mousemove',moveTip);c.addEventListener('mouseout',hideTip);});
+  [2003,2010,2017,2024].forEach(yr=>{const t=mk('text',{x:cx(yr),y:ph+14,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':8,fill:'rgba(155,163,184,0.35)'},g);t.textContent=yr;});
+  mk('line',{x1:0,x2:pw,y1:ph,y2:ph,stroke:'rgba(255,255,255,0.08)','stroke-width':1},g);
+  mk('line',{x1:0,x2:0,y1:0,y2:ph,stroke:'rgba(255,255,255,0.08)','stroke-width':1},g);
+})();
+
+// Line chart
+function drawEv(view){
+  const el=document.getElementById('chart-ev');
+  const W=800,H=310,ml=56,mr=20,mt=18,mb=40,pw=W-ml-mr,ph=H-mt-mb;
+  const svg=mkSVG(W,H,el);const g=mk('g',{transform:`translate(${ml},${mt})`},svg);
+  const yMin=2.0,yMax=5.6,cx=yr=>sc(yr,2003,2024,0,pw),cy=v=>sc(v,yMin,yMax,ph,0);
+  [2.5,3,3.5,4,4.5,5].forEach(v=>{mk('line',{x1:0,x2:pw,y1:cy(v),y2:cy(v),stroke:'rgba(255,255,255,0.04)','stroke-width':1},g);const t=mk('text',{x:-6,y:cy(v)+4,'text-anchor':'end','font-family':'JetBrains Mono,monospace','font-size':9,fill:'rgba(155,163,184,0.4)'},g);t.textContent=v.toFixed(1)+'h';});
+  [{yr:2007,lbl:'iPhone'},{yr:2013,lbl:'IG/Snap'},{yr:2014,lbl:'Drop'},{yr:2020,lbl:'COVID'}].forEach(a=>{mk('line',{x1:cx(a.yr),x2:cx(a.yr),y1:0,y2:ph,stroke:'rgba(255,255,255,0.05)','stroke-width':1,'stroke-dasharray':'3,4'},g);const t=mk('text',{x:cx(a.yr)+3,y:10,'font-family':'JetBrains Mono,monospace','font-size':8,fill:'rgba(155,163,184,0.3)'},g);t.textContent=a.lbl;});
+  mk('rect',{x:cx(2019.5),y:0,width:cx(2021.5)-cx(2019.5),height:ph,fill:'rgba(224,108,117,0.05)'},g);
+  function series(key,color,label){const pts=ATUS.map(d=>({x:cx(d.yr),y:cy(d[key]),d}));mk('path',{d:catmull(pts)+` L${cx(2024)},${cy(yMin)} L${cx(2003)},${cy(yMin)}Z`,fill:color,'fill-opacity':0.07},g);mk('path',{d:catmull(pts),fill:'none',stroke:color,'stroke-width':2.5,'stroke-linecap':'round'},g);pts.forEach(p=>{const c=mk('circle',{cx:p.x,cy:p.y,r:4.5,fill:color,stroke:'var(--bg)','stroke-width':2,style:'cursor:pointer'},g);c.addEventListener('mouseover',e=>showTip(`<strong>${p.d.yr}</strong><br>${label}: ${p.d[key].toFixed(2)} hrs/wk`,e));c.addEventListener('mousemove',moveTip);c.addEventListener('mouseout',hideTip);});}
+  if(view==='all'){series('all','#F5A623','All adults');document.getElementById('leg-ev').innerHTML=`<div class="li"><div class="ls" style="background:#F5A623"></div>All adults (hrs/week)</div>`;}
+  else{series('men','#56B4E9','Men');series('women','#E06C75','Women');document.getElementById('leg-ev').innerHTML=`<div class="li"><div class="ls" style="background:#56B4E9"></div>Men</div><div class="li"><div class="ls" style="background:#E06C75"></div>Women</div>`;}
+  [2003,2008,2014,2017,2022,2024].forEach(yr=>{mk('line',{x1:cx(yr),x2:cx(yr),y1:ph,y2:ph+4,stroke:'rgba(255,255,255,0.1)','stroke-width':1},g);const t=mk('text',{x:cx(yr),y:ph+15,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':9,fill:'rgba(155,163,184,0.38)'},g);t.textContent=yr;});
+  mk('line',{x1:0,x2:pw,y1:ph,y2:ph,stroke:'rgba(255,255,255,0.1)','stroke-width':1},g);
+  mk('line',{x1:0,x2:0,y1:0,y2:ph,stroke:'rgba(255,255,255,0.1)','stroke-width':1},g);
+}
+document.getElementById('t-ev').addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-ev .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawEv(e.target.dataset.v);});
+drawEv('all');
+
+// Demo chart
+function drawDemo(view){
+  const data=DEMO[view],el=document.getElementById('chart-demo');
+  const rh=44,W=800,ml=140,mr=108,mt=14,mb=34,pw=W-ml-mr,H=data.length*rh+mt+mb;
+  const svg=mkSVG(W,H,el);const g=mk('g',{transform:`translate(${ml},${mt})`},svg);
+  const mx=Math.max(...data.map(d=>d.v03));
+  data.forEach((d,i)=>{
+    const y=i*rh+3,bh=21;
+    const tl=mk('text',{x:-9,y:y+bh/2+5,'text-anchor':'end','font-family':'JetBrains Mono,monospace','font-size':10,fill:'rgba(155,163,184,0.72)'},g);tl.textContent=d.label;
+    mk('rect',{x:0,y,width:sc(d.v03,0,mx,0,pw),height:bh,fill:'rgba(245,166,35,0.13)',rx:3},g);
+    const w22=sc(d.v22,0,mx,0,pw);
+    mk('rect',{x:0,y:y+bh*.2,width:w22,height:bh*.6,fill:'#F5A623',rx:3,style:'cursor:pointer'},g);
+    const tv=mk('text',{x:w22+6,y:y+bh/2+5,'text-anchor':'start','font-family':'JetBrains Mono,monospace','font-size':10,fill:'#F5A623'},g);tv.textContent=d.v22+'m';
+    const w03=sc(d.v03,0,mx,0,pw);
+    const tv2=mk('text',{x:w03+6,y:y+5,'text-anchor':'start','font-family':'JetBrains Mono,monospace','font-size':9,fill:'rgba(245,166,35,0.35)'},g);tv2.textContent=d.v03+"m '03";
+    const tc=mk('text',{x:pw+7,y:y+bh/2+5,'text-anchor':'start','font-family':'JetBrains Mono,monospace','font-size':10,fill:'#E06C75'},g);tc.textContent=d.chg+'%';
+  });
+  mk('line',{x1:0,x2:0,y1:0,y2:data.length*rh,stroke:'rgba(255,255,255,0.07)','stroke-width':1},g);
+  const leg=mk('g',{transform:`translate(0,${data.length*rh+12})`},g);
+  mk('rect',{x:0,y:0,width:13,height:9,fill:'rgba(245,166,35,0.18)',rx:2},leg);const lt1=mk('text',{x:17,y:8,'font-family':'JetBrains Mono,monospace','font-size':9,fill:'rgba(155,163,184,0.4)'},leg);lt1.textContent='2003 baseline';
+  mk('rect',{x:98,y:2,width:13,height:6,fill:'#F5A623',rx:2},leg);const lt2=mk('text',{x:115,y:8,'font-family':'JetBrains Mono,monospace','font-size':9,fill:'rgba(155,163,184,0.6)'},leg);lt2.textContent='2022 (min/day) \u00b7 % = change since 2003';
+  document.getElementById('demo-src').textContent='Note: '+DEMO_NOTES[view]+' \u00b7 BLS ATUS supplemental tables.';
+}
+document.getElementById('t-demo').addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-demo .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawDemo(e.target.dataset.v);});
+drawDemo('age');
+
+// Stream graph
+function drawStream(view){
+  const cats=SCATS[view],el=document.getElementById('chart-stream');
+  const W=800,H=360,ml=28,mr=28,mt=20,mb=44,pw=W-ml-mr,ph=H-mt-mb;
+  const svg=mkSVG(W,H,el);const g=mk('g',{transform:`translate(${ml},${mt})`},svg);
+  const n=SYR.length;
+  // Stack
+  const stacked=[];let base=new Array(n).fill(0);
+  cats.forEach(cat=>{const lo=[...base];const hi=base.map((b,i)=>b+cat.vals[i]);stacked.push({cat,lo,hi});base=hi;});
+  // Silhouette centering
+  const totals=base,maxT=Math.max(...totals);
+  const cyF=v=>ph*(1-v/maxT);
+  const cxF=i=>sc(i,0,n-1,0,pw);
+  // Center each column
+  const shift=totals.map(t=>(ph-ph*t/maxT)/2);
+
+  mk('line',{x1:0,x2:pw,y1:ph/2,y2:ph/2,stroke:'rgba(255,255,255,0.05)','stroke-width':1,'stroke-dasharray':'4,4'},g);
+  stacked.forEach(s=>{
+    const ptsUp=SYR.map((_,i)=>({x:cxF(i),y:cyF(s.hi[i])+shift[i]}));
+    const ptsLo=SYR.map((_,i)=>({x:cxF(i),y:cyF(s.lo[i])+shift[i]})).reverse();
+    const d=catmull(ptsUp)+' L'+ptsLo.map(p=>`${p.x},${p.y}`).join(' L')+' Z';
+    const path=mk('path',{d,fill:s.cat.c,'fill-opacity':0.82,style:'cursor:pointer'},g);
+    path.addEventListener('mouseover',e=>{path.setAttribute('fill-opacity','1');});
+    path.addEventListener('mousemove',e=>{moveTip(e);const svgR=el.getBoundingClientRect();const mx2=e.clientX-svgR.left-ml;const idx=Math.max(0,Math.min(n-1,Math.round(sc(mx2,0,pw,0,n-1))));showTip(`<strong>${s.cat.n}</strong><br>${SYR[idx]}: ${s.cat.vals[idx]} min/day`,e);});
+    path.addEventListener('mouseout',()=>{path.setAttribute('fill-opacity','0.82');hideTip();});
+    const mi=Math.floor(n/2),midY=(cyF(s.hi[mi])+cyF(s.lo[mi]))/2+shift[mi],bw2=Math.abs(cyF(s.hi[mi])-cyF(s.lo[mi]));
+    if(bw2>12){const t=mk('text',{x:cxF(mi),y:midY+4,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':Math.min(11,bw2*0.3),'font-weight':'500',fill:'rgba(255,255,255,0.85)','pointer-events':'none'},g);t.textContent=s.cat.n;}
+  });
+  // Dashed line tracing the top edge of Socializing band
+  const si=stacked.findIndex(s=>s.cat.n==='Socializing');
+  if(si>=0){const s=stacked[si];const pts=SYR.map((_,i)=>({x:cxF(i),y:cyF(s.hi[i])+shift[i]}));mk('path',{d:catmull(pts),fill:'none',stroke:'rgba(245,166,35,0.9)','stroke-width':2,'stroke-dasharray':'5,3','stroke-linecap':'round'},g);}
+  SYR.forEach((yr,i)=>{mk('line',{x1:cxF(i),x2:cxF(i),y1:ph,y2:ph+5,stroke:'rgba(255,255,255,0.1)','stroke-width':1},g);const t=mk('text',{x:cxF(i),y:ph+18,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':10,fill:'rgba(155,163,184,0.45)'},g);t.textContent=yr;});
+  mk('line',{x1:0,x2:pw,y1:ph,y2:ph,stroke:'rgba(255,255,255,0.08)','stroke-width':1},g);
+  document.getElementById('leg-stream').innerHTML=cats.map(c=>`<div class="li"><div class="ld" style="background:${c.c}"></div>${c.n}</div>`).join('');
+}
+document.getElementById('t-stream').addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-stream .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawStream(e.target.dataset.v);});
+drawStream('all');
+
+// Cigarettes
+function makeCigs(id,n,pc,fc){const el=document.getElementById(id);for(let i=0;i<n;i++){const w=document.createElement('div');w.className='cig-mini';w.innerHTML=`<div class="cig-mini-paper" style="background:${pc};"></div><div class="cig-mini-filter" style="background:${fc};"></div>`;el.appendChild(w);}}
+makeCigs('cig-lonely',15,'#d4c5a0','#c8845a');makeCigs('cig-obesity',8,'#8e97b0','#7b5ea7');makeCigs('cig-inactive',5,'#8e97b0','#7b5ea7');makeCigs('cig-drink',3,'#8e97b0','#7b5ea7');
+
+function fmtPct(v){
+  if(v == null)return 'N/A';
+  if(v > 0 && v < 1)return '<1%';
+  return Math.round(v)+'%';
+}
+
+function pieStops(parts,colors){
+  const total=parts.reduce((sum,v)=>sum+(Number(v)||0),0)||100;
+  let acc=0;
+  return parts.map((value,i)=>{
+    const start=acc/total*360;
+    acc+=Number(value)||0;
+    const end=acc/total*360;
+    return `${colors[i]} ${start}deg ${end}deg`;
+  }).join(',');
+}
+
+function genderPie(title,data,labels,colors){
+  if(!data)return `<div class="pd-mini-pie-card"><div class="pd-mini-pie-title">${title}</div><div class="pd-lonely-line" style="margin:0;border:0;padding:0;">No gender data</div></div>`;
+  const values=[data.very,data.fairly,data.little,data.not];
+  return `<div class="pd-mini-pie-card">
+    <div class="pd-mini-pie-title">${title}</div>
+    <div class="pd-pie-wrap">
+      <div class="pd-pie" style="background:conic-gradient(${pieStops(values,colors)});"></div>
+      <div class="pd-pie-legend">
+        ${labels.map((label,i)=>`<div class="pd-pie-row"><div class="pd-pie-dot" style="background:${colors[i]};"></div><div class="pd-pie-label">${label}</div><div class="pd-pie-value">${fmtPct(values[i])}</div></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function showPD(d){
+  const el=document.getElementById('policy-detail');el.style.display='block';
+  document.getElementById('pd-country').textContent=`${d.connected}% very/fairly connected`;
+  document.getElementById('pd-country-title').textContent=d.country;
+  const p=d.policy!=='none'?POLICY_INFO[d.policy]:null;
+  document.getElementById('pd-bars').innerHTML=`<div class="pd-bars-title">Connection response breakdown</div>`+
+    `<div class="pd-pie-grid">`+
+    genderPie('Men · Connected',d.gender.menConnected,['Very','Fairly','A little','Not'],['#F5A623','#E8C547','#56B4E9','#E06C75'])+
+    genderPie('Women · Connected',d.gender.womenConnected,['Very','Fairly','A little','Not'],['#F5A623','#E8C547','#56B4E9','#E06C75'])+
+    genderPie('Men · Lonely',d.gender.menLonely,['Very','Fairly','A little','Not'],['#E06C75','#F5A623','#56B4E9','#009E73'])+
+    genderPie('Women · Lonely',d.gender.womenLonely,['Very','Fairly','A little','Not'],['#E06C75','#F5A623','#56B4E9','#009E73'])+
+    `</div>`+
+    `<div class="pd-lonely-line">Very/fairly lonely: ${d.lonely ?? 'N/A'}%</div>`;
+  document.getElementById('pd-name').textContent=p?'Policy response':'Policy response';
+  document.getElementById('pd-desc').textContent=p?p.desc:`No dedicated national loneliness policy is identified for ${d.country} in this project dataset.`;
+  const em={high:'Strong evidence',mod:'Moderate evidence',early:'Early stage \u2014 launched 2023',none:'No policy'};
+  const ec={high:'var(--teal)',mod:'var(--gold)',early:'var(--sky)',none:'var(--text3)'};
+  const ek=p?p.eff:'none';
+  document.getElementById('pd-eff').innerHTML=`<div class="eff-dot" style="background:${ec[ek]};"></div><span style="color:${ec[ek]};font-family:var(--mono);font-size:9px;letter-spacing:.06em;">${em[ek]}</span>`;
+}
+
+// D3 world map
+(function(){
+  const mapEl=document.getElementById('world-map');
+  if(!mapEl||typeof d3==='undefined')return;
+
+  const status=document.getElementById('world-map-status');
+  const aliases={
+    USA:'United States',
+    England:'United Kingdom',
+    'United States of America':'United States',
+    'Republic of Korea':'South Korea',
+    Korea:'South Korea',
+    Taiwan:'Taiwan (Province of China)',
+    'Czech Rep.':'Czech Republic',
+    'Dominican Rep.':'Dominican Republic',
+    'Bosnia and Herz.':'Bosnia and Herzegovina',
+    eSwatini:'Eswatini',
+    Palestine:'Palestinian Territories',
+    Turkiye:'Türkiye',
+    Turkey:'Türkiye',
+    Macedonia:'North Macedonia',
+    'N. Cyprus':'Northern Cyprus',
+    Gambia:'The Gambia',
+    Congo:'Republic of the Congo',
+    'Dem. Rep. Congo':'Democratic Republic of the Congo',
+    'United Republic of Tanzania':'Tanzania'
+  };
+
+  function countryKey(name){
+    return (name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]/g,'');
+  }
+
+  function pct(v){
+    const s=String(v||'').replace('%','').trim();
+    if(s.startsWith('<'))return 0.5;
+    const n=Number(s);
+    return Number.isFinite(n)?n:null;
+  }
+
+  function genderKey(row,gender){
+    return countryKey(row[`Country (${gender})`]);
+  }
+
+  function buildGenderMaps(connectedGenderRows,lonelyGenderRows){
+    const menConnected=new Map();
+    const womenConnected=new Map();
+    const menLonely=new Map();
+    const womenLonely=new Map();
+    connectedGenderRows.forEach(row=>{
+      if(row['Country (Men)'])menConnected.set(genderKey(row,'Men'),{
+        very:pct(row['Men.Very connected']),
+        fairly:pct(row['Men.Fairly connected']),
+        little:pct(row['Men.A Little connected']),
+        not:pct(row['Men.Not at all connected'])
+      });
+      if(row['Country (Women)'])womenConnected.set(genderKey(row,'Women'),{
+        very:pct(row['Women.Very connected']),
+        fairly:pct(row['Women.Fairly connected']),
+        little:pct(row['Women.A Little connected']),
+        not:pct(row['Women.Not at all connected'])
+      });
+    });
+    lonelyGenderRows.forEach(row=>{
+      if(row['Country (Men)'])menLonely.set(genderKey(row,'Men'),{
+        very:pct(row['Men.Very lonely']),
+        fairly:pct(row['Men.Fairly lonely']),
+        little:pct(row['Men.A little lonely']),
+        not:pct(row['Men.Not at all lonely'])
+      });
+      if(row['Country (Women)'])womenLonely.set(genderKey(row,'Women'),{
+        very:pct(row['Women.Very lonely']),
+        fairly:pct(row['Women.Fairly lonely']),
+        little:pct(row['Women.A little lonely']),
+        not:pct(row['Women.Not at all lonely'])
+      });
+    });
+    return {menConnected,womenConnected,menLonely,womenLonely};
+  }
+
+  function buildWorldData(connectedRows,lonelyRows,connectedGenderRows,lonelyGenderRows){
+    const lonelyByCountry=new Map(lonelyRows.map(row=>[countryKey(row.Country),row]));
+    const gender=buildGenderMaps(connectedGenderRows,lonelyGenderRows);
+    const dataByCountry=new Map();
+    connectedRows.forEach(row=>{
+      const country=row.Country;
+      const key=countryKey(country);
+      const lonely=lonelyByCountry.get(countryKey(country));
+      const item={
+        country,
+        connected:pct(row['Very + Fairly connected']),
+        veryConnected:pct(row['Very connected']),
+        fairlyConnected:pct(row['Fairly connected']),
+        littleConnected:pct(row['A Little connected']),
+        notConnected:pct(row['Not at all connected']),
+        lonely:lonely?pct(lonely['Very + Fairly Lonely']):null,
+        policy:POLICY_COUNTRIES[country]||'none',
+        gender:{
+          menConnected:gender.menConnected.get(key)||null,
+          womenConnected:gender.womenConnected.get(key)||null,
+          menLonely:gender.menLonely.get(key)||null,
+          womenLonely:gender.womenLonely.get(key)||null
+        }
+      };
+      dataByCountry.set(key,item);
+    });
+    return dataByCountry;
+  }
+
+  function socialColor(value,minConnected,maxConnected){
+    if(!Number.isFinite(value))return'rgba(78,87,105,.28)';
+    const t=Math.max(0,Math.min(1,(value-minConnected)/(maxConnected-minConnected)));
+    if(t<.25){const tt=t/.25;return`rgb(${Math.round(lerp(26,74,tt))},${Math.round(lerp(31,58,tt))},${Math.round(lerp(48,128,tt))})`;}
+    if(t<.5){const tt=(t-.25)/.25;return`rgb(${Math.round(lerp(74,200,tt))},${Math.round(lerp(58,64,tt))},${Math.round(lerp(128,10,tt))})`;}
+    if(t<.75){const tt=(t-.5)/.25;return`rgb(${Math.round(lerp(200,232,tt))},${Math.round(lerp(64,130,tt))},10)`;}
+    const tt=(t-.75)/.25;return`rgb(${Math.round(lerp(232,245,tt))},${Math.round(lerp(130,166,tt))},${Math.round(lerp(10,35,tt))})`;
+  }
+
+  function datumFor(name,dataByCountry){
+    return dataByCountry.get(countryKey(aliases[name]||name))||null;
+  }
+
+  function drawMap(geo,dataByCountry){
+    mapEl.innerHTML='';
+    const W=960,H=470;
+    const features=geo.features.filter(d=>!['Antarctica','French Southern and Antarctic Lands'].includes(d.properties.name));
+    const connectedValues=[...dataByCountry.values()].map(d=>d.connected).filter(Number.isFinite);
+    const minConnected=Math.min(...connectedValues);
+    const maxConnected=Math.max(...connectedValues);
+    const svg=d3.select(mapEl).append('svg')
+      .attr('viewBox',`0 0 ${W} ${H}`)
+      .attr('role','img')
+      .attr('aria-label','World map of Gallup social connection by country');
+    const g=svg.append('g');
+    const projection=d3.geoEquirectangular().fitExtent([[18,16],[W-18,H-18]],{type:'FeatureCollection',features});
+    const path=d3.geoPath(projection);
+    g.selectAll('.world-country')
+      .data(features)
+      .join('path')
+      .attr('class',d=>datumFor(d.properties.name,dataByCountry)?'world-country':'world-country no-data')
+      .attr('d',path)
+      .attr('fill',d=>{
+        const item=datumFor(d.properties.name,dataByCountry);
+        return item?socialColor(item.connected,minConnected,maxConnected):'rgba(78,87,105,.25)';
+      })
+      .attr('stroke',d=>{
+        const item=datumFor(d.properties.name,dataByCountry);
+        return item&&item.policy!=='none'?'rgba(245,166,35,.95)':'#1C2230';
+      })
+      .attr('stroke-width',d=>{
+        const item=datumFor(d.properties.name,dataByCountry);
+        return item&&item.policy!=='none'?1.35:.55;
+      })
+      .on('mouseover',(event,d)=>{
+        const item=datumFor(d.properties.name,dataByCountry);
+        if(!item)return;
+        hideTip();
+        showPD(item);
+      });
+
+    svg.call(d3.zoom()
+      .scaleExtent([1,6])
+      .on('zoom',event=>g.attr('transform',event.transform)));
+
+    if(status)status.textContent=`Real CSV data loaded: ${dataByCountry.size} Gallup countries`;
+  }
+
+  Promise.all([
+    d3.json('data/world.geojson'),
+    d3.csv('data/ConnectedByCountry.csv'),
+    d3.csv('data/LonlinessByCountry.csv'),
+    d3.csv('data/ConnectedByGenderCountry.csv'),
+    d3.csv('data/LonlinessByGenderCountry.csv')
+  ])
+    .then(([geo,connectedRows,lonelyRows,connectedGenderRows,lonelyGenderRows])=>drawMap(geo,buildWorldData(connectedRows,lonelyRows,connectedGenderRows,lonelyGenderRows)))
+    .catch(err=>{
+      console.error('World map failed to load:',err);
+      if(status)status.textContent='Map/CSV data not found. Serve this HTML from the project folder so data files are reachable.';
+    });
+})();
+
+// Stars
+(function(){
+  const canvas=document.getElementById('stars-canvas');const ctx=canvas.getContext('2d');let stars=[];
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  function init(){stars=Array.from({length:100},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.6+.3,a:Math.random(),da:(Math.random()-.5)*.003}));}
+  function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);stars.forEach(s=>{s.a=Math.max(.08,Math.min(1,s.a+s.da));if(Math.random()<.004)s.da*=-1;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,158,115,${(s.a*.55).toFixed(2)})`;ctx.fill();});requestAnimationFrame(draw);}
+  resize();init();draw();window.addEventListener('resize',()=>{resize();init();});
+  new IntersectionObserver(e=>{canvas.style.opacity=e[0].isIntersecting?'1':'0';},{threshold:0.2}).observe(document.getElementById('s-end'));
+})();
+
+// Nav
+const NAV=['s-hero','s-john','s-everyone','s-demo','s-stream','s-health','s-world','s-end'];
+const chLinks=document.querySelectorAll('.ch-link');
+window.addEventListener('scroll',()=>{
+  const sy=window.scrollY,dh=document.body.scrollHeight-window.innerHeight;
+  document.getElementById('progress').style.width=(sy/dh*100)+'%';
+  let active='s-hero';NAV.forEach(id=>{const e=document.getElementById(id);if(e&&e.getBoundingClientRect().top<=58)active=id;});
+  chLinks.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+active));
+});
+
+// Magnetic section locking for wheel/key/touch and nav jumps.
+let snapTimer=null;
+function snapToNearestScene(){
+  const scenes=[...document.querySelectorAll('section.scene')];
+  if(!scenes.length)return;
+  const navH=document.getElementById('ch-nav')?.offsetHeight||0;
+  const best=scenes.reduce((best,scene)=>{
+    const dist=Math.abs(scene.getBoundingClientRect().top-navH);
+    return dist<best.dist?{scene,dist}:best;
+  },{scene:scenes[0],dist:Infinity});
+  if(best.dist>110)return;
+  const target=best.scene;
+  const y=target.offsetTop-navH;
+  if(Math.abs(window.scrollY-y)>2)window.scrollTo({top:y,behavior:'smooth'});
+}
+window.addEventListener('scroll',()=>{
+  clearTimeout(snapTimer);
+  snapTimer=setTimeout(snapToNearestScene,220);
+},{passive:true});
+</script>
+</body>
+</html>
