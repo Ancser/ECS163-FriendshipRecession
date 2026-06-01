@@ -594,7 +594,7 @@ function buildJohnSeries(rows){
   const byId=new Map();
   rows.forEach(r=>{
     if(!byId.has(r.id)){
-      byId.set(r.id,{id:r.id,label:r.label,unit:r.unit,desc:r.description,color:r.color,opacity:+r.opacity||0.2,stroke:r.stroke||r.color,s:{}});
+      byId.set(r.id,{id:r.id,label:r.label,unit:r.unit,desc:r.description,source:r.source,code:r.question_code,s:{}});
     }
     byId.get(r.id).s[+r.year]=+r.value;
   });
@@ -602,6 +602,7 @@ function buildJohnSeries(rows){
 }
 
 const JOHN_BASELINE_YEAR=2000;
+const JOHN_DIM_ORDER=['health_excellent','romance','community_attendance','social_trust','mental_health','friend_evenings'];
 
 function scoreForJohnYear(dims,baseline,year){
   const parts=dims.map(d=>{
@@ -613,7 +614,7 @@ function scoreForJohnYear(dims,baseline,year){
 }
 
 function initJohnCsvViz(rows){
-  const dims=buildJohnSeries(rows);
+  const dims=buildJohnSeries(rows).sort((a,b)=>JOHN_DIM_ORDER.indexOf(a.id)-JOHN_DIM_ORDER.indexOf(b.id));
   const baseline={};
   dims.forEach(d=>baseline[d.id]=seriesValue(d.s,JOHN_BASELINE_YEAR));
 
@@ -758,7 +759,11 @@ function initJohnCsvViz(rows){
   update(JOHN_BASELINE_YEAR,0);
 }
 
-d3.csv('data/friendship_wellbeing.csv').then(initJohnCsvViz).catch(err=>console.error('Friendship wellbeing CSV failed to load:',err));
+Promise.all([
+  d3.csv('data/GSS.csv'),
+  d3.csv('data/YRBSS.csv')
+]).then(([gssRows,yrbssRows])=>initJohnCsvViz([...gssRows,...yrbssRows]))
+  .catch(err=>console.error('Friendship data CSV failed to load:',err));
 
 function beginJohnCsvLoop(){
   clearInterval(johnCsvViz.timer);
