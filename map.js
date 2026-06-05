@@ -666,10 +666,10 @@ updateLegend();
 //  DATA LOADING
 // ════════════════════════════════════════════════════════
 Promise.all([
-    d3.csv("GeoData/LonlinessByCountry.csv"),
-    d3.csv("GeoData/ConnectedByCountry.csv"),
-    d3.csv("GeoData/LonlinessByGenderCountry.csv"),
-    d3.csv("GeoData/ConnectedByGenderCountry.csv")
+    d3.csv("data/LonlinessByCountry.csv"),
+    d3.csv("data/ConnectedByCountry.csv"),
+    d3.csv("data/LonlinessByGenderCountry.csv"),
+    d3.csv("data/ConnectedByGenderCountry.csv")
 ]).then(function(files) {
 
     files[0].forEach(function(r) {
