@@ -469,14 +469,14 @@ function showTooltip(evt, d) {
         document.getElementById("tt-val").textContent = v + "% " + lbl;
     }
     tooltip.style("display", "block");
-    moveTooltip();
+    moveTooltip(evt);
 }
 
-function moveTooltip() {
+function moveTooltip(evt) {
     var wrap = document.getElementById("map-wrap");
     var rect = wrap.getBoundingClientRect();
-    var x    = d3.event.clientX - rect.left;
-    var y    = d3.event.clientY - rect.top;
+    var x    = evt.clientX - rect.left;
+    var y    = evt.clientY - rect.top;
     var tw   = 180;
     var left = (x + 14 + tw > wrap.offsetWidth) ? x - tw - 10 : x + 14;
     tooltip.style("left", left + "px").style("top", (y - 10) + "px");
@@ -645,11 +645,7 @@ var mapSvg = d3.select("#map")
 
 var mapG = mapSvg.append("g");
 
-mapSvg.call(d3.zoom().scaleExtent([0.8, 8]).on("zoom", function() {
-    mapG.attr("transform", d3.event.transform);
-}));
-mapSvg.on("mousedown.cursor", function() { mapSvg.style("cursor", "grabbing"); });
-mapSvg.on("mouseup.cursor",   function() { mapSvg.style("cursor", "grab"); });
+mapSvg.style("cursor", "default");
 
 // ════════════════════════════════════════════════════════
 //  EVENT WIRING
@@ -737,7 +733,7 @@ Promise.all([
     });
 
     // Draw map once data is ready
-    d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
+    d3.json("data/world.geojson")
         .then(function(geo) {
             mapCountryPaths = mapG.selectAll(".country")
                 .data(geo.features)
@@ -745,11 +741,11 @@ Promise.all([
                 .attr("class", "country")
                 .attr("d", pathFn)
                 .attr("fill", function(d) { return getColor(resolveKey(d.properties.name)); })
-                .on("mouseover", function(d) { showTooltip(d3.event, d); })
-                .on("mousemove", function()  { moveTooltip(); })
+                .on("mouseover", function(event, d) { showTooltip(event, d); })
+                .on("mousemove", function(event)  { moveTooltip(event); })
                 .on("mouseout",  function()  { hideTooltip(); })
-                .on("click", function(d) {
-                    d3.event.stopPropagation();
+                .on("click", function(event, d) {
+                    event.stopPropagation();
                     var key = resolveKey(d.properties.name);
                     if (key === selectedCountry) { closeSidebar(); return; }
                     mapCountryPaths.classed("selected", false);

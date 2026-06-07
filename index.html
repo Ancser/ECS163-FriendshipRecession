@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Human Battery â€” Friendship Recession</title>
+<title>Friendship Recession</title>
 <link rel="icon" href="data:,">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -97,31 +97,6 @@ h2.scene-title em{font-style:italic;font-weight:300;color:var(--amber);}
 .hm-flag{font-size:16px;display:block;margin-bottom:2px;}
 .hm-name{font-family:var(--mono);font-size:7px;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.55);display:block;line-height:1.3;}
 .hm-val{font-family:var(--sans);font-size:11px;font-weight:600;display:block;color:rgba(255,255,255,.9);}
-.world-map-shell{position:relative;background:radial-gradient(circle at 50% 45%,rgba(86,180,233,.08),rgba(11,13,19,0) 62%);overflow:hidden;}
-#world-map{height:min(58vh,560px);min-height:390px;}
-#world-map svg{width:100%;height:100%;display:block;}
-.world-country{stroke:#1C2230;stroke-width:.55;cursor:pointer;transition:fill .18s,opacity .18s,stroke .18s;}
-.world-country:hover{opacity:.86;stroke:var(--text);stroke-width:.9;}
-.world-country.no-data{cursor:default;opacity:.42;}
-.world-map-note{position:absolute;left:40px;bottom:20px;font-family:var(--mono);font-size:9px;color:var(--text3);background:rgba(11,13,19,.72);border:1px solid var(--border);border-radius:5px;padding:6px 8px;backdrop-filter:blur(8px);}
-.map-legend-row{position:absolute;right:40px;bottom:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(11,13,19,.72);border:1px solid var(--border);border-radius:5px;padding:7px 9px;backdrop-filter:blur(8px);}
-.map-grad{height:9px;width:210px;border-radius:3px;background:linear-gradient(to right,#1a1f3a,#4a3a80,#c8400a,#e8820a,#F5A623);}
-#policy-detail{display:none;position:absolute;right:40px;top:24px;z-index:40;width:min(620px,34vw);max-height:calc(100% - 48px);overflow:auto;background:rgba(35,43,58,.97);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:8px;padding:18px 22px;margin:0;box-shadow:0 18px 50px rgba(0,0,0,.55);backdrop-filter:blur(10px);}
-.pd-bars-title{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin:10px 0 8px;}
-.pd-pie-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 12px;}
-.pd-mini-pie-card{border:1px solid var(--border);border-radius:7px;padding:10px;background:rgba(11,13,19,.24);}
-.pd-mini-pie-title{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text);margin-bottom:8px;}
-.pd-pie-wrap{display:grid;grid-template-columns:74px 1fr;gap:10px;align-items:center;}
-.pd-pie{width:70px;height:70px;border-radius:50%;background:conic-gradient(var(--amber) 0deg 90deg,var(--gold) 90deg 180deg,var(--sky) 180deg 270deg,var(--rose) 270deg 360deg);position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
-.pd-pie::after{content:"";position:absolute;inset:21px;border-radius:50%;background:rgba(35,43,58,.97);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
-.pd-pie-legend{display:flex;flex-direction:column;gap:4px;}
-.pd-pie-row{display:grid;grid-template-columns:10px 1fr 30px;align-items:center;gap:6px;}
-.pd-pie-dot{width:8px;height:8px;border-radius:50%;}
-.pd-pie-label{font-family:var(--mono);font-size:9px;color:var(--text2);}
-.pd-pie-value{font-family:var(--mono);font-size:9px;color:var(--text);text-align:right;}
-.pd-lonely-line{font-family:var(--mono);font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:8px;margin:10px 0 12px;}
-.policy-eff{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;}
-.eff-dot{width:7px;height:7px;border-radius:50%;}
 #tip{position:fixed;background:var(--surface2);border:1px solid rgba(255,255,255,.08);color:var(--text);padding:9px 12px;border-radius:5px;font-family:var(--mono);font-size:11px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:9999;line-height:1.7;max-width:220px;box-shadow:0 4px 24px rgba(0,0,0,.7);}
 svg{display:block;width:100%;overflow:visible;}
 #chart-ev svg{height:min(31vh,265px)!important;width:100%!important;}
@@ -143,17 +118,18 @@ svg{display:block;width:100%;overflow:visible;}
 #s-world .section-wrap{max-width:none;height:100%;padding:24px 0 0;}
 #s-world .world-copy{max-width:1400px;margin:0 auto;padding:0 56px;}
 #s-world .scene-body{margin-bottom:8px!important;}
+#s-everyone .section-wrap,#s-demo .section-wrap,#s-stream .section-wrap,#s-health>div,#s-world .section-wrap,#s-end>.scene-2col{transform:translateY(-5vh);}
 @media(max-width:1200px){#s-john .scene-2col{grid-template-columns:1fr;gap:32px;}#s-john .social-viz-pair{gap:28px;}}
 @media(max-width:700px){body{font-size:16px;}#ch-nav{height:46px;padding:0 24px;}.ch-brand,.ch-link{font-size:9px;}html{scroll-padding-top:46px;}.scene{min-height:calc(100vh - 46px);scroll-margin-top:46px;}.scene-2col{grid-template-columns:1fr;gap:36px;padding:28px 28px;}.section-wrap{padding:24px 28px;}h2.scene-title{font-size:clamp(28px,9vw,44px);}.scene-body{font-size:17px;}.social-viz-pair{gap:12px;}.radar-panel svg{width:300px;}.battery-panel svg{width:190px;}.john-score-number{font-size:38px;}.john-metric-list{display:none;}.john-slider-row{width:100%;}.john-year-readout{font-size:34px;min-width:78px;}.ins-grid{grid-template-columns:1fr;}.callouts{grid-template-columns:1fr;}.heatmap-grid{grid-template-columns:repeat(4,1fr);}}
-@media(max-width:1100px){#policy-detail{right:16px;width:min(520px,calc(100vw - 32px));}}
 </style>
+<link rel="stylesheet" href="map.css">
 </head>
 <body>
 <canvas id="stars-canvas"></canvas>
 <div id="tip"></div>
 <div id="progress"></div>
 <nav id="ch-nav">
-  <span class="ch-brand">ECS 163 &middot; The Human Battery</span>
+  <span class="ch-brand">ECS 163 &middot; Friendship Recession &middot; Spring 2026</span>
   <a class="ch-link active" href="#s-hero">Intro</a>
   <a class="ch-link" href="#s-john">John</a>
   <a class="ch-link" href="#s-everyone">Everyone</a>
@@ -168,7 +144,6 @@ svg{display:block;width:100%;overflow:visible;}
 <section class="scene" id="s-hero" style="background:var(--bg);">
   <div class="scene-2col">
     <div>
-      <p class="eyebrow">The Human Battery &middot; ECS 163 &middot; UC Davis &middot; Spring 2026</p>
       <h1 class="display">The <em>Friendship</em> Recession</h1>
       <p class="scene-body" style="max-width:500px;">In 1990, only 3% of Americans had no close friends. By 2024 that figure is <strong>17%</strong> â€” a sevenfold increase in one generation. This is not a personal failure. It is a structural crisis hiding in plain sight.</p>
       <div class="hero-stats">
@@ -331,35 +306,61 @@ svg{display:block;width:100%;overflow:visible;}
 </section>
 
 <!-- WORLD MAP -->
-<section class="scene" id="s-world" style="background:var(--bg);padding:60px 0;">
-  <div class="section-wrap">
-    <div class="world-copy">
-      <p class="eyebrow">Global Picture</p>
-      <h2 class="scene-title" style="max-width:760px;">Where the world socializes &mdash; <em>and where it doesn't.</em></h2>
-      <p class="scene-body" style="max-width:760px;margin-bottom:28px;">The friendship recession is global, but some nations have held on or actively fought back. <strong>Brighter countries = higher social connection in the Gallup data. Gold outline = active loneliness policy.</strong> Hover highlighted countries for details.</p>
+<section class="scene" id="s-world" style="background:var(--bg);padding:0;">
+  <div id="main">
+    <div id="map-wrap">
+      <div id="map"></div>
+      <div class="map-copy-overlay">
+        <p class="eyebrow">Global Picture</p>
+        <h2>Where the world socializes <em>and where it doesn't.</em></h2>
+        <p>The friendship recession is global, but some nations have held on or actively fought back.</p>
+      </div>
+
+      <div id="bottom-controls">
+        <div class="btn-group">
+          <button class="mode-btn active" data-mode="loneliness">Loneliness</button>
+          <button class="mode-btn" data-mode="connected">Social Connection</button>
+          <button class="mode-btn" data-mode="policies">Policies</button>
+        </div>
+        <div id="legend">
+          <span id="legend-lo"></span>
+          <div id="legend-grad"></div>
+          <span id="legend-hi"></span>
+          <span id="legend-label"></span>
+        </div>
+      </div>
+
+      <div id="tooltip">
+        <div id="tt-name"></div>
+        <div id="tt-val"></div>
+        <div class="tt-hint">Click for details</div>
+      </div>
     </div>
-      <div class="world-map-shell">
-        <div id="world-map"></div>
-        <div class="world-map-note" id="world-map-status">Loading local map data...</div>
-        <div class="map-legend-row">
-          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">Less connected</span>
-          <div class="map-grad"></div>
-          <span style="font-family:var(--mono);font-size:9px;color:var(--text3);">More connected</span>
-          <span style="font-family:var(--mono);font-size:9px;color:var(--amber);">Gold outline = policy response</span>
+
+    <div id="sidebar">
+      <div id="sidebar-inner">
+        <div id="sb-header">
+          <div id="sb-country"></div>
+          <button id="sb-close">&times;</button>
         </div>
-        <div id="policy-detail">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
-            <div>
-              <div class="eyebrow" id="pd-country" style="margin-bottom:4px;"></div>
-              <div style="font-family:var(--sans);font-size:20px;font-weight:700;color:var(--text);line-height:1.15;margin-bottom:10px;" id="pd-country-title"></div>
-              <div id="pd-bars"></div>
-              <div style="font-family:var(--sans);font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;" id="pd-name"></div>
-              <div style="font-size:13px;color:var(--text2);line-height:1.65;max-width:580px;" id="pd-desc"></div>
-              <div class="policy-eff" id="pd-eff" style="margin-top:10px;"></div>
-            </div>
-            <button onclick="document.getElementById('policy-detail').style.display='none'" style="font-family:var(--mono);font-size:9px;color:var(--text3);background:none;border:none;cursor:pointer;flex-shrink:0;">&#10005; close</button>
+        <div id="sb-content"></div>
+
+        <div class="detail-overlay" id="policy-detail">
+          <div class="detail-header">
+            <button class="detail-back" id="pd-back">&larr; Back</button>
+            <div class="detail-title" id="pd-title"></div>
           </div>
+          <div class="detail-body" id="pd-body"></div>
         </div>
+
+        <div class="detail-overlay" id="gender-detail">
+          <div class="detail-header">
+            <button class="detail-back" id="gd-back">&larr; Back</button>
+            <div class="detail-title" id="gd-title"></div>
+          </div>
+          <div class="detail-body" id="gd-body"></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -379,20 +380,18 @@ svg{display:block;width:100%;overflow:visible;}
     <div class="glyph-wrap">
       <div class="social-viz-pair">
         <div class="radar-panel">
-          <div class="viz-label">Social Radar</div>
-          <svg id="g-end-radar" viewBox="0 0 260 260"></svg>
+          <svg id="g-end-radar" viewBox="0 0 760 620"></svg>
         </div>
         <div class="battery-panel">
-          <div class="year-badge" style="color:var(--teal);">2035</div>
-          <svg id="g-end" viewBox="0 0 280 400"></svg>
+          <svg id="g-end" viewBox="0 0 650 650"></svg>
+          <div class="john-score-mini">
+            <div class="john-score-number" id="g-end-score">100<span>%</span></div>
+          </div>
+          <div class="john-metric-list" id="g-end-metric-list"></div>
         </div>
       </div>
       <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;text-align:center;max-width:430px;line-height:1.6;">With policy intervention, the radar expands past its 2003 baseline while the battery drains back down.</div>
     </div>
-  </div>
-  <div style="padding:52px 40px;max-width:680px;margin:0 auto;text-align:center;border-top:1px solid var(--border);">
-    <p style="font-family:var(--sans);font-size:19px;font-weight:300;color:var(--text2);line-height:1.8;">You probably have a John in your life.<br>You might <em style="color:var(--amber);">be</em> John.<br><br>The recession is real. But recessions end.</p>
-    <div style="margin-top:22px;font-family:var(--mono);font-size:9px;color:var(--text3);line-height:2;max-width:560px;margin-left:auto;margin-right:auto;"><strong style="color:var(--text2);">Sources:</strong> BLS ATUS (2003&ndash;2024) &middot; AEI American Perspectives Survey (2021) &middot; Pew Research Center (2015&ndash;2024) &middot; CDC/NCHS (2024) &middot; Surgeon General Advisory (2023) &middot; OECD Time Use Database &middot; Holt-Lunstad et al. (2015) &middot; NORC/GSS SOCFREND</div>
   </div>
 </section>
 
@@ -415,8 +414,6 @@ const SCATS={
   men:[{n:'Sleep',c:'#7B5EA7',vals:[474,476,479,480,482]},{n:'Work & School',c:'#56B4E9',vals:[248,252,256,258,262]},{n:'Socializing',c:'#F5A623',vals:[67,59,58,44,36]},{n:'Screen/Leisure',c:'#E06C75',vals:[178,184,190,198,210]},{n:'Personal Care',c:'#009E73',vals:[42,42,42,42,42]},{n:'Commute',c:'#E8C547',vals:[26,27,28,29,30]},{n:'Other',c:'#4E5769',vals:[405,400,387,389,378]}],
   women:[{n:'Sleep',c:'#7B5EA7',vals:[485,487,489,490,492]},{n:'Work & School',c:'#56B4E9',vals:[183,186,191,194,198]},{n:'Socializing',c:'#F5A623',vals:[71,65,62,52,39]},{n:'Screen/Leisure',c:'#E06C75',vals:[167,173,181,188,200]},{n:'Personal Care',c:'#009E73',vals:[49,49,49,49,49]},{n:'Commute',c:'#E8C547',vals:[22,23,24,25,26]},{n:'Other',c:'#4E5769',vals:[463,457,444,442,436]}]
 };
-const POLICY_COUNTRIES={'United Kingdom':'uk',England:'uk',Japan:'jp',Denmark:'dk',Finland:'fi',Australia:'au','United States':'us',USA:'us'};
-const POLICY_INFO={uk:{name:'Ministry of Loneliness',desc:"The world's first dedicated government ministry for loneliness (est. 2018). Funded the \"Social Prescribing\" network \u2014 GPs prescribe community activities alongside medication. Coordinates policy across health, housing, and community infrastructure.",eff:'mod'},jp:{name:'Ibasho \u2014 Belonging Places',desc:'Government-created community spaces for older adults to gather without obligation or agenda. No structure \u2014 just a place to exist near others. Controlled trials show measurable reductions in isolation and loneliness scores.',eff:'mod'},dk:{name:'Co-housing Movement (Bofall)',desc:'State-supported co-housing where residents share spaces and eat together regularly. 1 in 50 Danes live in co-housing. Residents report dramatically lower loneliness rates than the national average.',eff:'high'},fi:{name:'Third Place Infrastructure',desc:"Sustained public investment in libraries as social hubs \u2014 maker spaces, community kitchens, recording studios. Library visits per capita are the world's highest. Social isolation scores among lowest in OECD.",eff:'high'},au:{name:'National Loneliness Framework 2023',desc:'Federal framework committing AU$140M to community connection initiatives including neighborhood ambassador programs and targeted outreach to young men 18\u201335 \u2014 the fastest-growing loneliness demographic.',eff:'early'},us:{name:"Surgeon General's Advisory 2023",desc:"Advisory from Dr. Vivek Murthy declaring a loneliness epidemic and calling for a \"national strategy.\" As of 2025, no federal funding has been allocated. Names the problem officially for the first time \u2014 but remains aspirational.",eff:'none'}};
 const SPOKE_LABELS=['Close Friends','Time Together','Social Trust','Belonging','Emotional Support','Civic Particip.'];
 const SPOKES={s2024:[0.38,0.30,0.35,0.33,0.40,0.18],s2014:[0.74,0.68,0.65,0.70,0.72,0.45],s2003:[0.88,0.92,0.80,0.85,0.87,0.76],send:[1.05,1.10,0.98,1.02,1.08,0.95]};
 const WATER={s2024:0.88,s2014:0.45,s2003:0.08,send:0.04};
@@ -572,8 +569,7 @@ async function startJohn(){
   });
 }
 
-drawRadar(document.getElementById('g-end-radar'),SPOKES.send,PAL_T);
-drawGlyph(document.getElementById('g-end'),WATER.send,SPOKES.send,PAL_T,{batteryOnly:true});
+// The final restored John panel is rendered after the CSV-driven labels load.
 
 // CSV-driven John section, adapted from water.html and mental_score.html.
 let johnCsvViz=null;
@@ -613,8 +609,98 @@ function scoreForJohnYear(dims,baseline,year){
   return {parts,score:d3.mean(parts,d=>d.ratio)*100};
 }
 
+function drawRestoredJohnFull(dims){
+  const radarSvg=d3.select('#g-end-radar');
+  const bodySvg=d3.select('#g-end');
+  radarSvg.selectAll('*').remove();
+  bodySvg.selectAll('*').remove();
+
+  const VW=760,VH=620;
+  const cx=VW*.5,cy=VH*.45,R=Math.min(cx,cy)*.70,N=dims.length;
+  const angle=i=>(Math.PI*2*i)/N-Math.PI/2;
+  radarSvg.attr('viewBox',`0 0 ${VW} ${VH}`).attr('preserveAspectRatio','xMidYMid meet');
+  radarSvg.append('rect')
+    .attr('x',24).attr('y',24).attr('width',VW-48).attr('height',VH-72)
+    .attr('rx',10).attr('fill','none').attr('stroke','rgba(255,255,255,.10)')
+    .attr('stroke-width',1.2);
+
+  [.25,.5,.75,1].forEach(lv=>{
+    radarSvg.append('polygon')
+      .attr('points',d3.range(N).map(i=>`${cx+R*lv*Math.cos(angle(i))},${cy+R*lv*Math.sin(angle(i))}`).join(' '))
+      .attr('fill','none').attr('stroke','rgba(255,255,255,.13)');
+    radarSvg.append('text').attr('x',cx).attr('y',cy-R*lv-4).attr('text-anchor','middle')
+      .attr('font-family','JetBrains Mono,monospace').attr('font-size',10).attr('fill','rgba(142,151,176,.62)')
+      .text(`${Math.round(lv*100)}%`);
+  });
+
+  dims.forEach((d,i)=>{
+    radarSvg.append('line')
+      .attr('x1',cx).attr('y1',cy)
+      .attr('x2',cx+R*Math.cos(angle(i))).attr('y2',cy+R*Math.sin(angle(i)))
+      .attr('stroke','rgba(255,255,255,.13)');
+    radarSvg.append('text')
+      .attr('x',cx+R*1.2*Math.cos(angle(i))).attr('y',cy+R*1.2*Math.sin(angle(i)))
+      .attr('dy','.35em').attr('text-anchor','middle')
+      .attr('font-family','JetBrains Mono,monospace').attr('font-size',24).attr('font-weight',800)
+      .attr('fill','var(--text)')
+      .text(d.label);
+  });
+
+  const fullPts=d3.range(N).map(i=>[cx+R*Math.cos(angle(i)),cy+R*Math.sin(angle(i))]);
+  radarSvg.append('polygon')
+    .attr('points',fullPts.map(p=>p.join(',')).join(' '))
+    .attr('fill','rgba(0,158,115,.20)')
+    .attr('stroke','var(--teal)')
+    .attr('stroke-width',3.2)
+    .attr('stroke-linejoin','round');
+  radarSvg.append('g').selectAll('circle').data(fullPts).join('circle')
+    .attr('cx',d=>d[0]).attr('cy',d=>d[1]).attr('r',4.5)
+    .attr('fill','var(--teal)').attr('stroke','var(--bg)').attr('stroke-width',2);
+
+  bodySvg.attr('viewBox','0 0 650 650').attr('preserveAspectRatio','xMidYMid meet');
+  const defs=bodySvg.append('defs');
+  const head={cx:325,cy:88,r:39};
+  const torsoPath='M278 162 H372 C394 162 412 180 412 202 V374 H238 V202 C238 180 256 162 278 162 Z';
+  const bodyParts=[
+    {x:238,y:202,width:55,height:171,rx:27.5},
+    {x:357,y:202,width:55,height:171,rx:27.5},
+    {x:268,y:366,width:50,height:224,rx:24},
+    {x:332,y:366,width:50,height:224,rx:24}
+  ];
+  const outlinePath=[
+    'M278 162 H372 C394 162 412 180 412 202 V345',
+    'C412 361 400 373 384 373 C368 373 357 361 357 345 V225',
+    'M293 225 V345 C293 361 282 373 266 373',
+    'C250 373 238 361 238 345 V202 C238 180 256 162 278 162',
+    'M268 373 V557 C268 576 278 590 293 590',
+    'C308 590 318 576 318 557 V373',
+    'M332 373 V557 C332 576 342 590 357 590',
+    'C372 590 382 576 382 557 V373'
+  ].join(' ');
+  const clip=defs.append('clipPath').attr('id','gEndHumanClip');
+  clip.append('circle').attr('cx',head.cx).attr('cy',head.cy).attr('r',head.r);
+  clip.append('path').attr('d',torsoPath);
+  bodyParts.forEach(part=>clip.append('rect').attr('x',part.x).attr('y',part.y).attr('width',part.width).attr('height',part.height).attr('rx',part.rx).attr('ry',part.rx));
+  const ghost=bodySvg.append('g').attr('fill','rgba(199,234,215,.22)');
+  ghost.append('circle').attr('cx',head.cx).attr('cy',head.cy).attr('r',head.r);
+  ghost.append('path').attr('d',torsoPath);
+  bodyParts.forEach(part=>ghost.append('rect').attr('x',part.x).attr('y',part.y).attr('width',part.width).attr('height',part.height).attr('rx',part.rx).attr('ry',part.rx));
+
+  const waterG=bodySvg.append('g').attr('clip-path','url(#gEndHumanClip)');
+  waterG.append('rect')
+    .attr('x',215).attr('y',49).attr('width',220).attr('height',541)
+    .attr('fill','var(--teal)').attr('opacity',.94);
+  bodySvg.append('circle').attr('cx',head.cx).attr('cy',head.cy).attr('r',head.r).attr('fill','none').attr('stroke','var(--text)').attr('stroke-width',5.5);
+  bodySvg.append('path').attr('d',outlinePath).attr('fill','none').attr('stroke','var(--text)').attr('stroke-width',5.5).attr('stroke-linecap','round').attr('stroke-linejoin','round');
+  d3.select('#g-end-score').html('100<span>%</span>');
+  d3.select('#g-end-metric-list').selectAll('.john-metric-row')
+    .data(dims).join('div').attr('class','john-metric-row')
+    .html(d=>`<div>${d.label}</div><div class="john-metric-track"><div class="john-metric-fill" style="width:100%"></div></div><div class="john-metric-value">100%</div>`);
+}
+
 function initJohnCsvViz(rows){
   const dims=buildJohnSeries(rows).sort((a,b)=>JOHN_DIM_ORDER.indexOf(a.id)-JOHN_DIM_ORDER.indexOf(b.id));
+  drawRestoredJohnFull(dims);
   const baseline={};
   dims.forEach(d=>baseline[d.id]=seriesValue(d.s,JOHN_BASELINE_YEAR));
 
@@ -901,238 +987,6 @@ drawStream('all');
 function makeCigs(id,n,pc,fc){const el=document.getElementById(id);for(let i=0;i<n;i++){const w=document.createElement('div');w.className='cig-mini';w.innerHTML=`<div class="cig-mini-paper" style="background:${pc};"></div><div class="cig-mini-filter" style="background:${fc};"></div>`;el.appendChild(w);}}
 makeCigs('cig-lonely',15,'#d4c5a0','#c8845a');makeCigs('cig-obesity',8,'#8e97b0','#7b5ea7');makeCigs('cig-inactive',5,'#8e97b0','#7b5ea7');makeCigs('cig-drink',3,'#8e97b0','#7b5ea7');
 
-function fmtPct(v){
-  if(v == null)return 'N/A';
-  if(v > 0 && v < 1)return '<1%';
-  return Math.round(v)+'%';
-}
-
-function pieStops(parts,colors){
-  const total=parts.reduce((sum,v)=>sum+(Number(v)||0),0)||100;
-  let acc=0;
-  return parts.map((value,i)=>{
-    const start=acc/total*360;
-    acc+=Number(value)||0;
-    const end=acc/total*360;
-    return `${colors[i]} ${start}deg ${end}deg`;
-  }).join(',');
-}
-
-function genderPie(title,data,labels,colors){
-  if(!data)return `<div class="pd-mini-pie-card"><div class="pd-mini-pie-title">${title}</div><div class="pd-lonely-line" style="margin:0;border:0;padding:0;">No gender data</div></div>`;
-  const values=[data.very,data.fairly,data.little,data.not];
-  return `<div class="pd-mini-pie-card">
-    <div class="pd-mini-pie-title">${title}</div>
-    <div class="pd-pie-wrap">
-      <div class="pd-pie" style="background:conic-gradient(${pieStops(values,colors)});"></div>
-      <div class="pd-pie-legend">
-        ${labels.map((label,i)=>`<div class="pd-pie-row"><div class="pd-pie-dot" style="background:${colors[i]};"></div><div class="pd-pie-label">${label}</div><div class="pd-pie-value">${fmtPct(values[i])}</div></div>`).join('')}
-      </div>
-    </div>
-  </div>`;
-}
-
-function showPD(d){
-  const el=document.getElementById('policy-detail');el.style.display='block';
-  document.getElementById('pd-country').textContent=`${d.connected}% very/fairly connected`;
-  document.getElementById('pd-country-title').textContent=d.country;
-  const p=d.policy!=='none'?POLICY_INFO[d.policy]:null;
-  document.getElementById('pd-bars').innerHTML=`<div class="pd-bars-title">Connection response breakdown</div>`+
-    `<div class="pd-pie-grid">`+
-    genderPie('Men Â· Connected',d.gender.menConnected,['Very','Fairly','A little','Not'],['#F5A623','#E8C547','#56B4E9','#E06C75'])+
-    genderPie('Women Â· Connected',d.gender.womenConnected,['Very','Fairly','A little','Not'],['#F5A623','#E8C547','#56B4E9','#E06C75'])+
-    genderPie('Men Â· Lonely',d.gender.menLonely,['Very','Fairly','A little','Not'],['#E06C75','#F5A623','#56B4E9','#009E73'])+
-    genderPie('Women Â· Lonely',d.gender.womenLonely,['Very','Fairly','A little','Not'],['#E06C75','#F5A623','#56B4E9','#009E73'])+
-    `</div>`+
-    `<div class="pd-lonely-line">Very/fairly lonely: ${d.lonely ?? 'N/A'}%</div>`;
-  document.getElementById('pd-name').textContent=p?'Policy response':'Policy response';
-  document.getElementById('pd-desc').textContent=p?p.desc:`No dedicated national loneliness policy is identified for ${d.country} in this project dataset.`;
-  const em={high:'Strong evidence',mod:'Moderate evidence',early:'Early stage \u2014 launched 2023',none:'No policy'};
-  const ec={high:'var(--teal)',mod:'var(--gold)',early:'var(--sky)',none:'var(--text3)'};
-  const ek=p?p.eff:'none';
-  document.getElementById('pd-eff').innerHTML=`<div class="eff-dot" style="background:${ec[ek]};"></div><span style="color:${ec[ek]};font-family:var(--mono);font-size:9px;letter-spacing:.06em;">${em[ek]}</span>`;
-}
-
-// D3 world map
-(function(){
-  const mapEl=document.getElementById('world-map');
-  if(!mapEl||typeof d3==='undefined')return;
-
-  const status=document.getElementById('world-map-status');
-  const aliases={
-    USA:'United States',
-    England:'United Kingdom',
-    'United States of America':'United States',
-    'Republic of Korea':'South Korea',
-    Korea:'South Korea',
-    Taiwan:'Taiwan (Province of China)',
-    'Czech Rep.':'Czech Republic',
-    'Dominican Rep.':'Dominican Republic',
-    'Bosnia and Herz.':'Bosnia and Herzegovina',
-    eSwatini:'Eswatini',
-    Palestine:'Palestinian Territories',
-    Turkiye:'TÃ¼rkiye',
-    Turkey:'TÃ¼rkiye',
-    Macedonia:'North Macedonia',
-    'N. Cyprus':'Northern Cyprus',
-    Gambia:'The Gambia',
-    Congo:'Republic of the Congo',
-    'Dem. Rep. Congo':'Democratic Republic of the Congo',
-    'United Republic of Tanzania':'Tanzania'
-  };
-
-  function countryKey(name){
-    return (name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]/g,'');
-  }
-
-  function pct(v){
-    const s=String(v||'').replace('%','').trim();
-    if(s.startsWith('<'))return 0.5;
-    const n=Number(s);
-    return Number.isFinite(n)?n:null;
-  }
-
-  function genderKey(row,gender){
-    return countryKey(row[`Country (${gender})`]);
-  }
-
-  function buildGenderMaps(connectedGenderRows,lonelyGenderRows){
-    const menConnected=new Map();
-    const womenConnected=new Map();
-    const menLonely=new Map();
-    const womenLonely=new Map();
-    connectedGenderRows.forEach(row=>{
-      if(row['Country (Men)'])menConnected.set(genderKey(row,'Men'),{
-        very:pct(row['Men.Very connected']),
-        fairly:pct(row['Men.Fairly connected']),
-        little:pct(row['Men.A Little connected']),
-        not:pct(row['Men.Not at all connected'])
-      });
-      if(row['Country (Women)'])womenConnected.set(genderKey(row,'Women'),{
-        very:pct(row['Women.Very connected']),
-        fairly:pct(row['Women.Fairly connected']),
-        little:pct(row['Women.A Little connected']),
-        not:pct(row['Women.Not at all connected'])
-      });
-    });
-    lonelyGenderRows.forEach(row=>{
-      if(row['Country (Men)'])menLonely.set(genderKey(row,'Men'),{
-        very:pct(row['Men.Very lonely']),
-        fairly:pct(row['Men.Fairly lonely']),
-        little:pct(row['Men.A little lonely']),
-        not:pct(row['Men.Not at all lonely'])
-      });
-      if(row['Country (Women)'])womenLonely.set(genderKey(row,'Women'),{
-        very:pct(row['Women.Very lonely']),
-        fairly:pct(row['Women.Fairly lonely']),
-        little:pct(row['Women.A little lonely']),
-        not:pct(row['Women.Not at all lonely'])
-      });
-    });
-    return {menConnected,womenConnected,menLonely,womenLonely};
-  }
-
-  function buildWorldData(connectedRows,lonelyRows,connectedGenderRows,lonelyGenderRows){
-    const lonelyByCountry=new Map(lonelyRows.map(row=>[countryKey(row.Country),row]));
-    const gender=buildGenderMaps(connectedGenderRows,lonelyGenderRows);
-    const dataByCountry=new Map();
-    connectedRows.forEach(row=>{
-      const country=row.Country;
-      const key=countryKey(country);
-      const lonely=lonelyByCountry.get(countryKey(country));
-      const item={
-        country,
-        connected:pct(row['Very + Fairly connected']),
-        veryConnected:pct(row['Very connected']),
-        fairlyConnected:pct(row['Fairly connected']),
-        littleConnected:pct(row['A Little connected']),
-        notConnected:pct(row['Not at all connected']),
-        lonely:lonely?pct(lonely['Very + Fairly Lonely']):null,
-        policy:POLICY_COUNTRIES[country]||'none',
-        gender:{
-          menConnected:gender.menConnected.get(key)||null,
-          womenConnected:gender.womenConnected.get(key)||null,
-          menLonely:gender.menLonely.get(key)||null,
-          womenLonely:gender.womenLonely.get(key)||null
-        }
-      };
-      dataByCountry.set(key,item);
-    });
-    return dataByCountry;
-  }
-
-  function socialColor(value,minConnected,maxConnected){
-    if(!Number.isFinite(value))return'rgba(78,87,105,.28)';
-    const t=Math.max(0,Math.min(1,(value-minConnected)/(maxConnected-minConnected)));
-    if(t<.25){const tt=t/.25;return`rgb(${Math.round(lerp(26,74,tt))},${Math.round(lerp(31,58,tt))},${Math.round(lerp(48,128,tt))})`;}
-    if(t<.5){const tt=(t-.25)/.25;return`rgb(${Math.round(lerp(74,200,tt))},${Math.round(lerp(58,64,tt))},${Math.round(lerp(128,10,tt))})`;}
-    if(t<.75){const tt=(t-.5)/.25;return`rgb(${Math.round(lerp(200,232,tt))},${Math.round(lerp(64,130,tt))},10)`;}
-    const tt=(t-.75)/.25;return`rgb(${Math.round(lerp(232,245,tt))},${Math.round(lerp(130,166,tt))},${Math.round(lerp(10,35,tt))})`;
-  }
-
-  function datumFor(name,dataByCountry){
-    return dataByCountry.get(countryKey(aliases[name]||name))||null;
-  }
-
-  function drawMap(geo,dataByCountry){
-    mapEl.innerHTML='';
-    const W=960,H=470;
-    const features=geo.features.filter(d=>!['Antarctica','French Southern and Antarctic Lands'].includes(d.properties.name));
-    const connectedValues=[...dataByCountry.values()].map(d=>d.connected).filter(Number.isFinite);
-    const minConnected=Math.min(...connectedValues);
-    const maxConnected=Math.max(...connectedValues);
-    const svg=d3.select(mapEl).append('svg')
-      .attr('viewBox',`0 0 ${W} ${H}`)
-      .attr('role','img')
-      .attr('aria-label','World map of Gallup social connection by country');
-    const g=svg.append('g');
-    const projection=d3.geoEquirectangular().fitExtent([[18,16],[W-18,H-18]],{type:'FeatureCollection',features});
-    const path=d3.geoPath(projection);
-    g.selectAll('.world-country')
-      .data(features)
-      .join('path')
-      .attr('class',d=>datumFor(d.properties.name,dataByCountry)?'world-country':'world-country no-data')
-      .attr('d',path)
-      .attr('fill',d=>{
-        const item=datumFor(d.properties.name,dataByCountry);
-        return item?socialColor(item.connected,minConnected,maxConnected):'rgba(78,87,105,.25)';
-      })
-      .attr('stroke',d=>{
-        const item=datumFor(d.properties.name,dataByCountry);
-        return item&&item.policy!=='none'?'rgba(245,166,35,.95)':'#1C2230';
-      })
-      .attr('stroke-width',d=>{
-        const item=datumFor(d.properties.name,dataByCountry);
-        return item&&item.policy!=='none'?1.35:.55;
-      })
-      .on('mouseover',(event,d)=>{
-        const item=datumFor(d.properties.name,dataByCountry);
-        if(!item)return;
-        hideTip();
-        showPD(item);
-      });
-
-    svg.call(d3.zoom()
-      .scaleExtent([1,6])
-      .on('zoom',event=>g.attr('transform',event.transform)));
-
-    if(status)status.textContent=`Real CSV data loaded: ${dataByCountry.size} Gallup countries`;
-  }
-
-  Promise.all([
-    d3.json('data/world.geojson'),
-    d3.csv('data/ConnectedByCountry.csv'),
-    d3.csv('data/LonlinessByCountry.csv'),
-    d3.csv('data/ConnectedByGenderCountry.csv'),
-    d3.csv('data/LonlinessByGenderCountry.csv')
-  ])
-    .then(([geo,connectedRows,lonelyRows,connectedGenderRows,lonelyGenderRows])=>drawMap(geo,buildWorldData(connectedRows,lonelyRows,connectedGenderRows,lonelyGenderRows)))
-    .catch(err=>{
-      console.error('World map failed to load:',err);
-      if(status)status.textContent='Map/CSV data not found. Serve this HTML from the project folder so data files are reachable.';
-    });
-})();
-
 // Stars
 (function(){
   const canvas=document.getElementById('stars-canvas');const ctx=canvas.getContext('2d');let stars=[];
@@ -1149,7 +1003,8 @@ const chLinks=document.querySelectorAll('.ch-link');
 window.addEventListener('scroll',()=>{
   const sy=window.scrollY,dh=document.body.scrollHeight-window.innerHeight;
   document.getElementById('progress').style.width=(sy/dh*100)+'%';
-  let active='s-hero';NAV.forEach(id=>{const e=document.getElementById(id);if(e&&e.getBoundingClientRect().top<=58)active=id;});
+  const navH=document.getElementById('ch-nav')?.offsetHeight||58;
+  let active='s-hero';NAV.forEach(id=>{const e=document.getElementById(id);if(e&&e.getBoundingClientRect().top<=navH+4)active=id;});
   chLinks.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+active));
 });
 
@@ -1173,6 +1028,7 @@ window.addEventListener('scroll',()=>{
   snapTimer=setTimeout(snapToNearestScene,220);
 },{passive:true});
 </script>
+<script src="map.js"></script>
 </body>
 </html>
 
