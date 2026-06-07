@@ -161,9 +161,9 @@ svg{display:block;width:100%;overflow:visible;}
 <section class="scene" id="s-john" style="background:var(--bg2);min-height:100vh;">
   <div class="scene-2col">
     <div>
-      <p class="eyebrow" id="j-eyebrow">Scene 1 &middot; 2000 &mdash; 2022 Trend</p>
-      <h2 class="scene-title" id="j-heading">This is <em>John.</em></h2>
-      <p class="scene-body" id="j-body">He's 55. He has <strong>2 close friends</strong> — down from 6. He spends <strong>2.8 hours a week</strong> with them. The water inside him is at his shoulders. The six spokes of friendship and wellbeing are moving in the wrong direction.</p>
+      <p class="eyebrow" id="j-eyebrow">Who is most connected?</p>
+      <h2 class="scene-title" id="j-heading">The Human Battery<br><em>is running low.</em></h2>
+      <p class="scene-body" id="j-body">Drag through the years to see how six social signals fill &mdash; or drain &mdash; the same person-shaped battery.</p>
       <div style="margin-top:20px;">
         <button id="j-btn" onclick="startJohn()" style="font-family:var(--mono);font-size:9px;padding:7px 16px;border:1px solid var(--amber);background:transparent;color:var(--amber);cursor:pointer;border-radius:3px;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;">&#9654; Show John's Story</button>
         <div id="j-progress" style="margin-top:10px;display:flex;gap:6px;align-items:center;"></div>
@@ -500,7 +500,7 @@ const PAL_R={...PAL_N,water:'rgba(224,108,117,0.42)',waterWave:'rgba(224,108,117
 const PAL_T={...PAL_N,spoke:'rgba(0,158,115,0.92)',spokeFill:'rgba(0,158,115,0.13)',water:'rgba(0,158,115,0.22)',waterWave:'rgba(0,158,115,0.40)',star:'#009E73'};
 
 const JSCENES=[
-  {key:'s2024',yr:2024,pal:PAL_R,ey:'Scene 1 \u00b7 2024 \u2014 Present Day',hd:'This is <em>John.</em>',bd:'He\'s 55. He has <strong>2 close friends</strong> \u2014 down from 6. He spends <strong>2.8 hours a week</strong> with them. The water is at his shoulders. All six spokes of his social life have collapsed back into his body.'},
+  {key:'s2024',yr:2024,pal:PAL_R,ey:'Who is most connected?',hd:'The Human Battery<br><em>is running low.</em>',bd:'Drag through the years to see how six social signals fill &mdash; or drain &mdash; the same person-shaped battery.'},
   {key:'s2003',yr:2003,pal:PAL_N,ey:'Scene 2 \u00b7 2003 \u2014 Twenty Years Ago',hd:'What normal <em>looked like.</em>',bd:'John is 34. He has <strong>6 close friends.</strong> He spends <strong>6.5 hours a week</strong> with them \u2014 board game nights, long dinners that run past midnight. The water is low. His social anatomy is fully extended.<br><br>This is not nostalgia. This is what normal used to look like. And it is recoverable.'},
   {key:'s2014',yr:2014,pal:PAL_N,ey:'Scene 3 \u00b7 2014 \u2014 The Inflection Point',hd:'The gradual <em>erosion begins.</em>',bd:'Smartphone ownership crosses 60%. Instagram. Snapchat. The group chat replaces the group dinner.<br><br><em>Civic Participation</em> retracts first. Then <em>Neighbor Ties.</em> The water climbs to his chest. He barely notices.'},
   {key:'s2024',yr:2024,pal:PAL_R,ey:'Scene 4 \u00b7 2024 \u2014 The Collapse',hd:'Twenty years of <em>drift.</em>',bd:'All six spokes collapsed. The water is at his shoulders. His phone is always in his hand but he hasn\'t had a real conversation in weeks.'},
