@@ -496,6 +496,63 @@ function statRow(label, val, color) {
         '</div>';
 }
 
+function genderColors(type) {
+    return type === "loneliness"
+        ? { v:"#dc2626", f:"#9a334e", al:"#5b3a68", na:"#1e3a5f", vfColor:"#dc2626" }
+        : { v:"#4ade80", f:"#2fab58", al:"#1f7a3d", na:"#14532d", vfColor:"#4ade80" };
+}
+
+function genderInlineHtml(countryKey, type) {
+    var isLone = type === "loneliness";
+    var men = isLone ? GALLUP.men_loneliness[countryKey] : GALLUP.men_connected[countryKey];
+    var women = isLone ? GALLUP.women_loneliness[countryKey] : GALLUP.women_connected[countryKey];
+    var colors = genderColors(type);
+    if (!men && !women) return "";
+    var rows = isLone
+        ? [
+            { label:"Very", key:"v", color:colors.v },
+            { label:"Fairly", key:"f", color:colors.f },
+            { label:"A little", key:"al", color:colors.al },
+            { label:"Not at all", key:"na", color:colors.na }
+          ]
+        : [
+            { label:"Not at all", key:"na", color:colors.na },
+            { label:"A little", key:"al", color:colors.al },
+            { label:"Fairly", key:"f", color:colors.f },
+            { label:"Very", key:"v", color:colors.v }
+          ];
+    function val(data, key) {
+        return data && data[key] !== null && data[key] !== undefined ? data[key] : null;
+    }
+    function fmt(v) {
+        return v === null ? "N/A" : v + "%";
+    }
+    function bar(v, side, color) {
+        if (v === null) return '<div class="gender-pyramid-bar empty"></div>';
+        return '<div class="gender-pyramid-bar ' + side + '" style="width:' + v + '%;background:' + color + '"></div>';
+    }
+    return '<div class="gender-inline gender-pyramid" onclick="event.stopPropagation()">' +
+        '<div class="gender-pyramid-head"><span>Men</span><span>Women</span></div>' +
+        rows.map(function(r) {
+            var mv = val(men, r.key);
+            var wv = val(women, r.key);
+            return '<div class="gender-pyramid-row">' +
+                '<div class="gender-pyramid-label">' + r.label + '</div>' +
+                '<div class="gender-pyramid-value men-value">' + fmt(mv) + '</div>' +
+                '<div class="gender-pyramid-side left">' + bar(mv, "men", r.color) + '</div>' +
+                '<div class="gender-pyramid-side right">' + bar(wv, "women", r.color) + '</div>' +
+                '<div class="gender-pyramid-value women-value">' + fmt(wv) + '</div>' +
+            '</div>';
+        }).join('') +
+        '</div>';
+}
+
+function toggleGenderInline(card) {
+    card.classList.toggle("expanded");
+    var hint = card.querySelector(".card-hint");
+    if (hint) hint.textContent = card.classList.contains("expanded") ? "Click to collapse gender breakdown" : "Click for gender breakdown";
+}
+
 function showSidebar(key) {
     selectedCountry = key;
     document.getElementById("sb-country").textContent = key;
@@ -513,13 +570,14 @@ function showSidebar(key) {
         var hasLoneGender = !!(GALLUP.men_loneliness[key] || GALLUP.women_loneliness[key]);
         html += '<div class="section-label">Loneliness</div>';
         html += '<div class="stat-card' + (hasLoneGender ? ' clickable' : '') + '"' +
-            (hasLoneGender ? ' onclick="showGenderDetail(\'' + key.replace(/'/g, "&#39;") + '\',\'loneliness\')"' : '') + '>' +
+            (hasLoneGender ? ' onclick="toggleGenderInline(this)"' : '') + '>' +
             '<h4>Self-Reported Loneliness</h4>' +
-            '<div class="stat-headline">Very + Fairly Lonely: <b style="color:#ef4444">' + lone.vf + '%</b></div>' +
-            statRow("Very lonely",   lone.v,  "#ef4444") +
-            statRow("Fairly lonely", lone.f,  "#f97316") +
-            statRow("A little",      lone.al, "#fbbf24") +
-            statRow("Not at all",    lone.na, "#4ade80") +
+            '<div class="stat-headline">Very + Fairly Lonely: <b style="color:#dc2626">' + lone.vf + '%</b></div>' +
+            statRow("Very lonely",   lone.v,  "#dc2626") +
+            statRow("Fairly lonely", lone.f,  "#9a334e") +
+            statRow("A little",      lone.al, "#5b3a68") +
+            statRow("Not at all",    lone.na, "#1e3a5f") +
+            (hasLoneGender ? genderInlineHtml(key, "loneliness") : '') +
             (hasLoneGender ? '<div class="card-hint">Click for gender breakdown</div>' : '') +
             '</div>';
     }
@@ -529,13 +587,14 @@ function showSidebar(key) {
         var hasConnGender = !!(GALLUP.men_connected[key] || GALLUP.women_connected[key]);
         html += '<div class="section-label">Social Connection</div>';
         html += '<div class="stat-card' + (hasConnGender ? ' clickable' : '') + '"' +
-            (hasConnGender ? ' onclick="showGenderDetail(\'' + key.replace(/'/g, "&#39;") + '\',\'connected\')"' : '') + '>' +
+            (hasConnGender ? ' onclick="toggleGenderInline(this)"' : '') + '>' +
             '<h4>Perceptions of Social Connectedness</h4>' +
             '<div class="stat-headline">Very + Fairly Connected: <b style="color:#4ade80">' + conn.vf + '%</b></div>' +
+            statRow("Not at all",       conn.na, "#14532d") +
+            statRow("A little",         conn.al, "#1f7a3d") +
+            statRow("Fairly connected", conn.f,  "#2fab58") +
             statRow("Very connected",   conn.v,  "#4ade80") +
-            statRow("Fairly connected", conn.f,  "#06b6d4") +
-            statRow("A little",         conn.al, "#3b82f6") +
-            statRow("Not at all",       conn.na, "#ef4444") +
+            (hasConnGender ? genderInlineHtml(key, "connected") : '') +
             (hasConnGender ? '<div class="card-hint">Click for gender breakdown</div>' : '') +
             '</div>';
     }
@@ -592,8 +651,8 @@ function showGenderDetail(countryKey, type) {
     var mData    = isLone ? GALLUP.men_loneliness[countryKey]  : GALLUP.men_connected[countryKey];
     var wData    = isLone ? GALLUP.women_loneliness[countryKey] : GALLUP.women_connected[countryKey];
     var colors   = isLone
-        ? { v:"#ef4444", f:"#f97316", al:"#fbbf24", na:"#4ade80", vfColor:"#ef4444" }
-        : { v:"#4ade80", f:"#06b6d4", al:"#3b82f6", na:"#ef4444", vfColor:"#4ade80" };
+        ? { v:"#dc2626", f:"#9a334e", al:"#5b3a68", na:"#1e3a5f", vfColor:"#dc2626" }
+        : { v:"#4ade80", f:"#2fab58", al:"#1f7a3d", na:"#14532d", vfColor:"#4ade80" };
     var vfLabel  = isLone ? "Very + Fairly Lonely"     : "Very + Fairly Connected";
     var vLabel   = isLone ? "Very lonely"               : "Very connected";
     var fLabel   = isLone ? "Fairly lonely"             : "Fairly connected";
@@ -605,10 +664,15 @@ function showGenderDetail(countryKey, type) {
             '<h4>' + emoji + ' ' + label + '</h4>' +
             '<div class="stat-card">' +
                 '<div class="stat-headline">' + vfLabel + ': <b style="color:' + colors.vfColor + '">' + d.vf + '%</b></div>' +
-                statRow(vLabel,        d.v,  colors.v) +
-                statRow(fLabel,        d.f,  colors.f) +
-                statRow("A little",    d.al, colors.al) +
-                statRow("Not at all",  d.na, colors.na) +
+                (isLone
+                    ? statRow(vLabel,        d.v,  colors.v) +
+                      statRow(fLabel,        d.f,  colors.f) +
+                      statRow("A little",    d.al, colors.al) +
+                      statRow("Not at all",  d.na, colors.na)
+                    : statRow("Not at all",  d.na, colors.na) +
+                      statRow("A little",    d.al, colors.al) +
+                      statRow(fLabel,        d.f,  colors.f) +
+                      statRow(vLabel,        d.v,  colors.v)) +
             '</div>' +
         '</div>';
     }
@@ -634,7 +698,7 @@ var mapH   = mapDiv.offsetHeight;
 
 var projection = d3.geoNaturalEarth1()
     .scale(mapW / 6)
-    .translate([mapW / 2, mapH / 1.85]);
+    .translate([mapW * 0.45, mapH / 1.85]);
 
 var pathFn = d3.geoPath().projection(projection);
 

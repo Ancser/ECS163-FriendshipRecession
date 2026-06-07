@@ -33,6 +33,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:19
 .eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:18px;}
 h1.display{font-family:var(--sans);font-size:clamp(54px,6.6vw,104px);line-height:.95;font-weight:700;letter-spacing:-.03em;margin-bottom:24px;}
 h1.display em{font-style:italic;font-weight:300;color:var(--amber);}
+.hero-title-only{width:100%;padding:0 40px;text-align:center;display:flex;align-items:center;justify-content:center;}
+.hero-title-only h1.display{margin-bottom:0;}
+.hero-title-only h1.display span{display:block;}
+.intro-team{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--text3);text-align:center;white-space:nowrap;}
 h2.scene-title{font-family:var(--sans);font-size:clamp(37px,4.3vw,58px);font-weight:700;line-height:1.05;letter-spacing:-.02em;margin-bottom:22px;}
 h2.scene-title em{font-style:italic;font-weight:300;color:var(--amber);}
 .scene-body{font-size:clamp(19px,1.24vw,24px);font-weight:300;color:var(--text2);line-height:1.72;}
@@ -51,6 +55,11 @@ h2.scene-title em{font-style:italic;font-weight:300;color:var(--amber);}
 .viz-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;text-align:center;}
 #s-john .scene-2col{max-width:1660px;grid-template-columns:minmax(520px,.82fr) minmax(915px,1.18fr);gap:54px;}
 #s-john .social-viz-pair{gap:39px;}
+#s-end .scene-2col{max-width:1660px;grid-template-columns:minmax(520px,.82fr) minmax(915px,1.18fr);gap:54px;}
+#s-end .social-viz-pair{gap:39px;}
+#s-end .scene-body{font-size:clamp(17px,1.08vw,21px);line-height:1.62;max-width:560px;}
+#s-end .hero-stats{margin-top:20px!important;}
+#s-end .stat-n{font-size:25px;}
 .radar-panel svg{width:522px;max-width:100%;height:auto;overflow:visible;}
 .battery-panel svg{width:280px;max-width:100%;height:auto;overflow:visible;}
 .john-score-mini{margin-top:6px;text-align:center;}
@@ -122,7 +131,7 @@ svg{display:block;width:100%;overflow:visible;}
 @media(max-width:1200px){#s-john .scene-2col{grid-template-columns:1fr;gap:32px;}#s-john .social-viz-pair{gap:28px;}}
 @media(max-width:700px){body{font-size:16px;}#ch-nav{height:46px;padding:0 24px;}.ch-brand,.ch-link{font-size:9px;}html{scroll-padding-top:46px;}.scene{min-height:calc(100vh - 46px);scroll-margin-top:46px;}.scene-2col{grid-template-columns:1fr;gap:36px;padding:28px 28px;}.section-wrap{padding:24px 28px;}h2.scene-title{font-size:clamp(28px,9vw,44px);}.scene-body{font-size:17px;}.social-viz-pair{gap:12px;}.radar-panel svg{width:300px;}.battery-panel svg{width:190px;}.john-score-number{font-size:38px;}.john-metric-list{display:none;}.john-slider-row{width:100%;}.john-year-readout{font-size:34px;min-width:78px;}.ins-grid{grid-template-columns:1fr;}.callouts{grid-template-columns:1fr;}.heatmap-grid{grid-template-columns:repeat(4,1fr);}}
 </style>
-<link rel="stylesheet" href="map.css">
+<link rel="stylesheet" href="map.css?v=20260607-gender-axis-joined">
 </head>
 <body>
 <canvas id="stars-canvas"></canvas>
@@ -142,24 +151,12 @@ svg{display:block;width:100%;overflow:visible;}
 
 <!-- HERO -->
 <section class="scene" id="s-hero" style="background:var(--bg);">
-  <div class="scene-2col">
-    <div>
-      <h1 class="display">The <em>Friendship</em> Recession</h1>
-      <p class="scene-body" style="max-width:500px;">In 1990, only 3% of Americans had no close friends. By 2024 that figure is <strong>17%</strong> â€” a sevenfold increase in one generation. This is not a personal failure. It is a structural crisis hiding in plain sight.</p>
-      <div class="hero-stats">
-        <div class="stat-chip"><span class="stat-n">&minus;57%</span><span class="stat-l">Social hours lost<br>since 2003</span></div>
-        <div class="stat-chip"><span class="stat-n">17%</span><span class="stat-l">Americans with<br>zero close friends</span></div>
-        <div class="stat-chip"><span class="stat-n">2023</span><span class="stat-l">Surgeon General<br>epidemic declaration</span></div>
-      </div>
-    </div>
-    <div>
-      <div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;">U.S. average social hours/week (2003&ndash;2024)</div>
-      <div id="hero-spark"></div>
-    </div>
+  <div class="hero-title-only">
+    <h1 class="display"><span>The</span><span><em>Friendship</em></span><span>Recession</span></h1>
   </div>
+  <div class="intro-team">Team 01 | Abdul, Arthur, Deyu, Kuval, Maheshwar</div>
   <div class="scroll-cue"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v12M2 9l6 6 6-6"/></svg>scroll to begin</div>
 </section>
-
 <!-- JOHN -->
 <section class="scene" id="s-john" style="background:var(--bg2);min-height:100vh;">
   <div class="scene-2col">
@@ -390,7 +387,6 @@ svg{display:block;width:100%;overflow:visible;}
           <div class="john-metric-list" id="g-end-metric-list"></div>
         </div>
       </div>
-      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:10px;text-align:center;max-width:430px;line-height:1.6;">With policy intervention, the radar expands past its 2003 baseline while the battery drains back down.</div>
     </div>
   </div>
 </section>
@@ -619,10 +615,6 @@ function drawRestoredJohnFull(dims){
   const cx=VW*.5,cy=VH*.45,R=Math.min(cx,cy)*.70,N=dims.length;
   const angle=i=>(Math.PI*2*i)/N-Math.PI/2;
   radarSvg.attr('viewBox',`0 0 ${VW} ${VH}`).attr('preserveAspectRatio','xMidYMid meet');
-  radarSvg.append('rect')
-    .attr('x',24).attr('y',24).attr('width',VW-48).attr('height',VH-72)
-    .attr('rx',10).attr('fill','none').attr('stroke','rgba(255,255,255,.10)')
-    .attr('stroke-width',1.2);
 
   [.25,.5,.75,1].forEach(lv=>{
     radarSvg.append('polygon')
@@ -641,7 +633,7 @@ function drawRestoredJohnFull(dims){
     radarSvg.append('text')
       .attr('x',cx+R*1.2*Math.cos(angle(i))).attr('y',cy+R*1.2*Math.sin(angle(i)))
       .attr('dy','.35em').attr('text-anchor','middle')
-      .attr('font-family','JetBrains Mono,monospace').attr('font-size',24).attr('font-weight',800)
+      .attr('font-family','JetBrains Mono,monospace').attr('font-size',24)
       .attr('fill','var(--text)')
       .text(d.label);
   });
@@ -714,10 +706,6 @@ function initJohnCsvViz(rows){
   const cx=VW*.5,cy=VH*.45,R=Math.min(cx,cy)*.70,N=dims.length;
   const angle=i=>(Math.PI*2*i)/N-Math.PI/2;
   radarSvg.attr('viewBox',`0 0 ${VW} ${VH}`).attr('preserveAspectRatio','xMidYMid meet');
-  radarSvg.append('rect')
-    .attr('x',24).attr('y',24).attr('width',VW-48).attr('height',VH-72)
-    .attr('rx',10).attr('fill','none').attr('stroke','rgba(255,255,255,.10)')
-    .attr('stroke-width',1.2);
 
   [.25,.5,.75,1].forEach(lv=>{
     radarSvg.append('polygon')
@@ -736,7 +724,7 @@ function initJohnCsvViz(rows){
     radarSvg.append('text')
       .attr('x',cx+R*1.2*Math.cos(angle(i))).attr('y',cy+R*1.2*Math.sin(angle(i)))
       .attr('dy','.35em').attr('text-anchor','middle')
-      .attr('font-family','JetBrains Mono,monospace').attr('font-size',24).attr('font-weight',800)
+      .attr('font-family','JetBrains Mono,monospace').attr('font-size',24)
       .attr('fill','var(--text)')
       .text(d.label)
       .on('mouseover',e=>showTip(`<strong>${d.label}</strong><br>${d.desc}`,e))
@@ -745,10 +733,8 @@ function initJohnCsvViz(rows){
   });
 
   const baselinePts=d3.range(N).map(i=>[cx+R*Math.cos(angle(i)),cy+R*Math.sin(angle(i))]);
-  radarSvg.append('defs').append('clipPath').attr('id','johnRadarClip')
-    .append('polygon').attr('points',baselinePts.map(p=>p.join(',')).join(' '));
-  radarSvg.append('rect').attr('clip-path','url(#johnRadarClip)')
-    .attr('x',cx-R-20).attr('y',cy-R-20).attr('width',R*2+40).attr('height',R*2+40)
+  radarSvg.append('polygon')
+    .attr('points',baselinePts.map(p=>p.join(',')).join(' '))
     .attr('fill','rgba(255,255,255,.03)');
 
   function wavePath(x1,x2,topY,bottomY,phase,area){
@@ -883,23 +869,6 @@ startJohn=function(){
   beginJohnCsvLoop();
 };
 
-// Hero sparkline
-(function(){
-  const el=document.getElementById('hero-spark');
-  const W=430,H=126,ml=44,mr=14,mt=12,mb=32,pw=W-ml-mr,ph=H-mt-mb;
-  const svg=mkSVG(W,H,el);const g=mk('g',{transform:`translate(${ml},${mt})`},svg);
-  const yMin=2.0,yMax=5.4,cx=yr=>sc(yr,2003,2024,0,pw),cy=v=>sc(v,yMin,yMax,ph,0);
-  [3,3.5,4,4.5,5].forEach(v=>{mk('line',{x1:0,x2:pw,y1:cy(v),y2:cy(v),stroke:'rgba(255,255,255,0.04)','stroke-width':1},g);const t=mk('text',{x:-5,y:cy(v)+4,'text-anchor':'end','font-family':'JetBrains Mono,monospace','font-size':8,fill:'rgba(155,163,184,0.4)'},g);t.textContent=v.toFixed(1)+'h';});
-  mk('rect',{x:cx(2019.5),y:0,width:cx(2021.5)-cx(2019.5),height:ph,fill:'rgba(224,108,117,0.05)'},g);
-  const pts=ATUS.map(d=>({x:cx(d.yr),y:cy(d.all)}));
-  mk('path',{d:catmull(pts)+` L${cx(2024)},${cy(yMin)} L${cx(2003)},${cy(yMin)}Z`,fill:'rgba(245,166,35,0.07)'},g);
-  mk('path',{d:catmull(pts),fill:'none',stroke:'#F5A623','stroke-width':2.5,'stroke-linecap':'round'},g);
-  pts.forEach((p,i)=>{const c=mk('circle',{cx:p.x,cy:p.y,r:4,fill:'#F5A623',stroke:'var(--bg)','stroke-width':2,style:'cursor:pointer'},g);c.addEventListener('mouseover',e=>showTip(`<strong>${ATUS[i].yr}</strong><br>${ATUS[i].all.toFixed(2)} hrs/week`,e));c.addEventListener('mousemove',moveTip);c.addEventListener('mouseout',hideTip);});
-  [2003,2010,2017,2024].forEach(yr=>{const t=mk('text',{x:cx(yr),y:ph+14,'text-anchor':'middle','font-family':'JetBrains Mono,monospace','font-size':8,fill:'rgba(155,163,184,0.35)'},g);t.textContent=yr;});
-  mk('line',{x1:0,x2:pw,y1:ph,y2:ph,stroke:'rgba(255,255,255,0.08)','stroke-width':1},g);
-  mk('line',{x1:0,x2:0,y1:0,y2:ph,stroke:'rgba(255,255,255,0.08)','stroke-width':1},g);
-})();
-
 // Line chart
 function drawEv(view){
   const el=document.getElementById('chart-ev');
@@ -1028,7 +997,7 @@ window.addEventListener('scroll',()=>{
   snapTimer=setTimeout(snapToNearestScene,220);
 },{passive:true});
 </script>
-<script src="map.js"></script>
+<script src="map.js?v=20260607-gender-axis-joined"></script>
 </body>
 </html>
 
