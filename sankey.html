@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where Did the Time Go</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="data/data-24h.js"></script>
+<script src="data/data-companion-years.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg:      #0a0e1a;
+  --surface: #111827;
+  --surf2:   #1a2235;
+  --border:  rgba(255,255,255,0.07);
+  --text:    #e2e8f0;
+  --muted:   #64748b;
+  --amber:   #f59e0b;
+  --red:     #ef4444;
+  --font:    "DM Sans", sans-serif;
+  --mono:    "JetBrains Mono", monospace;
+}
+html, body { background: var(--bg); color: var(--text); font-family: var(--font); }
+body { padding: 30px 32px 36px; max-width: 1400px; margin: 0 auto; }
+
+/* ── Typography ─────────────────────────────── */
+h1 { font-size: clamp(26px, 3.5vw, 40px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.08; margin-bottom: 10px; }
+h2 { font-size: clamp(18px, 2vw, 24px); font-weight: 700; letter-spacing: -0.01em; }
+h3 { font-size: clamp(15px, 1.5vw, 18px); font-weight: 600; }
+.body-text { font-size: 17px; font-weight: 300; color: #8e97b0; line-height: 1.75; max-width: 640px; margin-bottom: 24px; }
+.body-text strong { color: var(--text); font-weight: 600; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+.src-note { font-family: var(--mono); font-size: 13px; color: var(--muted); padding: 12px 28px 16px; border-top: 1px solid var(--border); }
+.chart-shell { display: grid; grid-template-columns: minmax(230px, 300px) minmax(760px, 1fr); gap: 28px; align-items: start; }
+.intro-rail { padding-top: 4px; }
+.intro-rail .body-text { margin-bottom: 0; max-width: 280px; }
+.chart-main { min-width: 0; }
+
+/* ── Card ───────────────────────────────────── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.card-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 28px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+.card-head-right { display: flex; align-items: center; gap: 14px; }
+
+/* slide dots */
+.slide-dots { display: flex; gap: 6px; align-items: center; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; transition: all 0.3s; }
+.dot.on { background: var(--amber); width: 24px; border-radius: 4px; }
+
+/* back button */
+.back-btn { font-family: var(--mono); font-size: 12px; color: var(--amber); background: none; border: 1px solid rgba(245,158,11,0.4); border-radius: 6px; padding: 7px 16px; cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase; transition: all 0.2s; display: none; }
+.back-btn:hover { background: rgba(245,158,11,0.1); }
+.back-btn.show { display: block; }
+
+/* ── Age pill tabs ──────────────────────────── */
+.controls { padding: 14px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.ctrl-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); flex-shrink: 0; }
+.pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill {
+  font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 8px 18px;
+  border: 1px solid rgba(255,255,255,0.14); background: transparent;
+  color: var(--muted); border-radius: 24px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.pill:hover { border-color: var(--amber); color: var(--text); }
+.pill.on { background: var(--amber); color: #0a0e1a; border-color: var(--amber); }
+
+/* click hint line */
+.click-hint { padding: 0 28px 12px; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 13px; color: rgba(245,158,11,0.7); }
+
+/* ── Slide transitions ──────────────────────── */
+.slide { transition: opacity 0.36s ease, transform 0.36s ease; }
+.slide.hidden { display: none; }
+
+/* ── Year slider - large distinct element ───── */
+.yr-bar {
+  display: none;
+  padding: 20px 28px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surf2);
+}
+.yr-bar-label {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.yr-track { display: flex; align-items: center; gap: 16px; }
+.yr-end { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--muted); }
+.yr-end.active { color: var(--amber); }
+input[type=range] {
+  flex: 1;
+  -webkit-appearance: none; appearance: none;
+  height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--amber); cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(245,158,11,0.25);
+  transition: box-shadow 0.2s;
+}
+input[type=range]::-webkit-slider-thumb:hover { box-shadow: 0 0 0 8px rgba(245,158,11,0.2); }
+input[type=range]::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--amber); cursor: pointer; border: none;
+  box-shadow: 0 0 0 4px rgba(245,158,11,0.25);
+}
+.yr-now { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--amber); min-width: 54px; text-align: right; }
+
+/* ── Friends callout box ────────────────────── */
+.friends-callout {
+  display: none;
+  margin: 16px 28px 0;
+  padding: 20px 24px;
+  background: rgba(245,158,11,0.05);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-left: 4px solid var(--amber);
+  border-radius: 0 10px 10px 0;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+}
+.fc-main { }
+.fc-hrs { font-size: clamp(32px, 4vw, 48px); font-weight: 700; color: var(--amber); line-height: 1; }
+.fc-label { font-family: var(--mono); font-size: 13px; color: #94a3b8; margin-top: 4px; }
+.fc-pct { font-size: clamp(36px, 5vw, 56px); font-weight: 700; color: var(--red); line-height: 1; }
+.fc-since { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* ── Tooltip ────────────────────────────────── */
+#tip { position: fixed; background: rgba(10,14,26,0.97); border: 1px solid rgba(255,255,255,0.1); color: var(--text); padding: 12px 16px; border-radius: 8px; font-family: var(--mono); font-size: 13px; pointer-events: none; opacity: 0; transition: opacity 0.1s; z-index: 999; line-height: 1.7; max-width: 230px; box-shadow: 0 8px 32px rgba(0,0,0,0.7); }
+#tip strong { color: var(--amber); display: block; font-size: 12px; margin-bottom: 3px; }
+
+/* pulse animation on social time tap hint - subtle, every 5 seconds */
+@keyframes tapPulse { 0%,72%,100% { opacity:0; transform:scale(1); } 76% { opacity:.85; transform:scale(1.3); } 84% { opacity:0; transform:scale(1); } 88% { opacity:.45; transform:scale(1.15); } 94% { opacity:0; transform:scale(1); } }
+.tap-ring { animation: tapPulse 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+svg { display: block; width: 100%; }
+
+@media (max-width: 980px) {
+  body { max-width: 1050px; }
+  .chart-shell { display: block; }
+  .intro-rail { margin-bottom: 28px; }
+  .intro-rail .body-text { max-width: 640px; }
+}
+@media (max-width: 640px) {
+  body { padding: 20px 14px 48px; }
+  .card-head, .controls, .yr-bar, .click-hint, .friends-callout, .src-note { padding-left: 16px; padding-right: 16px; }
+  .friends-callout { margin: 14px 16px 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="chart-shell">
+<aside class="intro-rail">
+  <p class="eyebrow">24 Hours &middot; Where Does It Actually Go</p>
+  <h1>A Day in America</h1>
+  <p class="body-text">
+    Pick your age group to see how a full day actually breaks down. Then tap <strong>Social Time</strong> to see who is in the room with you, and drag the year to watch what happened to friends.
+  </p>
+</aside>
+
+<main class="chart-main">
+<div class="card">
+
+  <!-- header -->
+  <div class="card-head">
+    <h2 id="cardTitle">Where Does Your Day Go?</h2>
+    <div class="card-head-right">
+      <button class="back-btn" id="backBtn" onclick="goBack()">Back to your day</button>
+      <div class="slide-dots">
+        <div class="dot on" data-s="0"></div>
+        <div class="dot" data-s="1"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- controls row -->
+  <div class="controls" id="ctrlBar">
+    <span class="ctrl-label">Age group</span>
+    <div class="pill-row" id="agePills">
+      <button class="pill on" data-ag="15-29">In your 20s</button>
+      <button class="pill" data-ag="30-44">30s &amp; 40s</button>
+      <button class="pill" data-ag="45-59">50s</button>
+      <button class="pill" data-ag="60+">60 &amp; Older</button>
+    </div>
+  </div>
+
+  <!-- tap hint (slide 0 only) -->
+  <div class="click-hint" id="clickHint">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#f59e0b" stroke-width="1.5"/><circle cx="8" cy="8" r="3" fill="#f59e0b"/></svg>
+    Tap the amber <strong style="color:var(--amber);margin:0 3px;">Social Time</strong> ribbon to see where it goes
+  </div>
+
+  <!-- slide wrapper -->
+  <div id="slideWrap">
+    <div class="slide" id="slide0">
+      <svg id="daySvg" viewBox="0 0 870 390" style="width:100%;height:auto;display:block;"></svg>
+    </div>
+    <div class="slide hidden" id="slide1">
+      <svg id="compSvg" viewBox="0 0 870 330" style="width:100%;height:auto;display:block;"></svg>
+    </div>
+  </div>
+
+  <!-- friends callout (slide 1 only) -->
+  <div class="friends-callout" id="friendsCallout">
+    <div class="fc-main">
+      <div class="fc-hrs" id="fcHrs">1.03 hrs/day</div>
+      <div class="fc-label">with friends</div>
+    </div>
+    <div>
+      <div class="fc-pct" id="fcPct"></div>
+      <div class="fc-since" id="fcSince"></div>
+    </div>
+  </div>
+
+  <!-- year slider (slide 1 only) -->
+  <div class="yr-bar" id="yrBar">
+    <div class="yr-bar-label">Drag to change year</div>
+    <div class="yr-track">
+      <span class="yr-end">2010</span>
+      <input id="yrSlider" type="range" min="0" max="12" step="1" value="0">
+      <span class="yr-end">2023</span>
+      <span class="yr-now" id="yrNow">2010</span>
+    </div>
+  </div>
+
+  <p class="src-note" id="srcNote">Source: Our World In Data &middot; U.S. Bureau of Labor Statistics (2025) &middot; BLS ATUS 2003-2020</p>
+
+</div>
+
+<div id="tip"></div>
+</main>
+</div>
+
+<script>
+/* =====================================================
+   SANKEY CATEGORY SETUP
+   Social Time goes first so it is at the top.
+   All colors are bright enough to see on dark bg.
+   ===================================================== */
+var DAY_ORDER  = ["social", "sleep", "work", "screens", "home", "hobbies"];
+var DAY_COLORS = {
+  social:  "#f59e0b",  /* amber */
+  sleep:   "#4b7bbb",  /* steel blue */
+  work:    "#6366f1",  /* indigo */
+  screens: "#06b6d4",  /* cyan */
+  home:    "#8b5cf6",  /* violet */
+  hobbies: "#10b981"   /* emerald */
+};
+
+/* Friends goes first in companion view (top of chart) */
+var COMP_KEYS = [
+  { key: "friends",   label: "Friends",    color: "#f59e0b" },  /* amber - top */
+  { key: "alone",     label: "Alone",      color: "#4e5769" },
+  { key: "partner",   label: "Partner",    color: "#8b5cf6" },
+  { key: "children",  label: "Children",   color: "#38bdf8" },
+  { key: "coworkers", label: "Co-workers", color: "#10b981" },
+  { key: "family",    label: "Family",     color: "#fb7185" }
+];
+
+var onSlide    = 0;
+var curAgeDay  = "15-29";
+var curAgeComp = "All ages";
+var curYrIdx   = 0;
+
+var tip = document.getElementById("tip");
+function showTip(html, e) { tip.innerHTML = html; tip.style.opacity = "1"; moveTip(e); }
+function moveTip(e) {
+  var tw = tip.offsetWidth, th = tip.offsetHeight;
+  tip.style.left = (e.clientX + 16 + tw > innerWidth ? e.clientX - tw - 12 : e.clientX + 16) + "px";
+  tip.style.top  = (e.clientY + th > innerHeight ? e.clientY - th - 8 : e.clientY - 8) + "px";
+}
+function hideTip() { tip.style.opacity = "0"; }
+document.addEventListener("mousemove", function(e) { if (tip.style.opacity === "1") moveTip(e); });
+
+/* =====================================================
+   FLOW PATH HELPER
+   Makes the bezier ribbon between two vertical bars.
+   ===================================================== */
+function flowPath(sx, sy0, sy1, dx, dy0, dy1) {
+  var mid = (sx + dx) / 2;
+  return "M" + sx + "," + sy0.toFixed(1)
+    + " C" + mid + "," + sy0.toFixed(1) + " " + mid + "," + dy0.toFixed(1) + " " + dx + "," + dy0.toFixed(1)
+    + " L" + dx + "," + dy1.toFixed(1)
+    + " C" + mid + "," + dy1.toFixed(1) + " " + mid + "," + sy1.toFixed(1) + " " + sx + "," + sy1.toFixed(1)
+    + " Z";
+}
+
+function mkEl(tag) { return document.createElementNS("http://www.w3.org/2000/svg", tag); }
+function setAttrs(el, attrs) { for (var k in attrs) el.setAttribute(k, attrs[k]); return el; }
+function addText(parent, x, y, text, attrs) {
+  var t = mkEl("text");
+  setAttrs(t, Object.assign({ x: x, y: y, "dominant-baseline": "middle", "font-family": "JetBrains Mono, monospace" }, attrs));
+  t.textContent = text;
+  parent.appendChild(t);
+  return t;
+}
+
+/* =====================================================
+   DRAW 24H SANKEY - slide 0
+   Social Time is at the TOP so it is immediately visible.
+   ===================================================== */
+function drawDay(ag) {
+  curAgeDay = ag;
+  var data  = DAY_BY_AGE[ag];
+  var svgEl = document.getElementById("daySvg");
+  svgEl.innerHTML = "";
+
+  var W=870, H=390, ML=96, MR=196, MT=24, MB=12, NW=20, GAP=4;
+  var PW=W-ML-MR, PH=H-MT-MB;
+  var ppu  = (PH - (DAY_ORDER.length - 1) * GAP) / 24;
+  var srcX = ML, destX = ML + PW - NW;
+
+  /* figure out each node y position (social first = top) */
+  var destY = MT;
+  var nodes = DAY_ORDER.map(function(key, i) {
+    var h = data[key] * ppu, y0 = destY, y1 = destY + h;
+    destY = y1 + (i < DAY_ORDER.length - 1 ? GAP : 0);
+    return { key: key, y0: y0, y1: y1, h: h };
+  });
+
+  /* source bar y positions */
+  var srcY = MT;
+  var srcFlows = DAY_ORDER.map(function(key) {
+    var h = data[key] * ppu, y0 = srcY, y1 = srcY + h;
+    srcY = y1;
+    return { y0: y0, y1: y1 };
+  });
+
+  var g = mkEl("g");
+  svgEl.appendChild(g);
+
+  /* source bar - colored segments (no invisible sleep) */
+  nodes.forEach(function(nd, i) {
+    var sf = srcFlows[i];
+    var r = mkEl("rect");
+    setAttrs(r, { x: srcX, y: sf.y0.toFixed(1), width: NW, height: (sf.y1 - sf.y0).toFixed(1), fill: DAY_COLORS[nd.key], opacity: "0.9" });
+    g.appendChild(r);
+  });
+  addText(g, srcX - 10, MT + PH / 2 - 9, "24 hrs", { "text-anchor": "end", "font-size": "16", "font-weight": "700", fill: "#e2e8f0" });
+  addText(g, srcX - 10, MT + PH / 2 + 10, "your day", { "text-anchor": "end", "font-size": "12", fill: "#64748b" });
+
+  /* flows and destination nodes */
+  nodes.forEach(function(nd, i) {
+    var sf     = srcFlows[i];
+    var isSoc  = nd.key === "social";
+    var clr    = DAY_COLORS[nd.key];
+    var baseOp = isSoc ? 0.65 : 0.28;
+    var meta   = DAY_BUCKET_META[nd.key];
+
+    /* flow ribbon */
+    var path = mkEl("path");
+    setAttrs(path, { d: flowPath(srcX + NW, sf.y0, sf.y1, destX, nd.y0, nd.y1), fill: clr, "fill-opacity": baseOp });
+    if (isSoc) path.style.cursor = "pointer";
+    path.addEventListener("mouseover", function(e) {
+      path.setAttribute("fill-opacity", baseOp + 0.3);
+      showTip("<strong>" + meta.label + "</strong>" + data[nd.key].toFixed(2) + " hrs/day (" + Math.round(data[nd.key] / 24 * 100) + "% of your day)", e);
+    });
+    path.addEventListener("mouseout", function() { path.setAttribute("fill-opacity", baseOp); hideTip(); });
+    if (isSoc) path.addEventListener("click", goToSlide1);
+    g.appendChild(path);
+
+    /* destination rect */
+    var rect = mkEl("rect");
+    setAttrs(rect, { x: destX, y: nd.y0.toFixed(1), width: NW, height: (nd.y1 - nd.y0).toFixed(1), fill: clr, opacity: isSoc ? "0.95" : "0.82", rx: "2" });
+    if (isSoc) rect.style.cursor = "pointer";
+    rect.addEventListener("mouseover", function(e) { showTip("<strong>" + meta.label + "</strong>" + data[nd.key].toFixed(2) + " hrs/day", e); });
+    rect.addEventListener("mouseout", hideTip);
+    if (isSoc) rect.addEventListener("click", goToSlide1);
+    g.appendChild(rect);
+
+    /* right labels */
+    var lx = destX + NW + 13, ly = (nd.y0 + nd.y1) / 2, big = nd.h > 22;
+    addText(g, lx, big ? ly - 6 : ly, meta.label, { "font-size": isSoc ? "14" : "13", "font-weight": isSoc ? "700" : "400", fill: isSoc ? "#f59e0b" : "#94a3b8" });
+    if (big) addText(g, lx, ly + 11, data[nd.key].toFixed(2) + "h", { "font-size": "11", fill: "#4e5769" });
+
+    /* pct in ribbon center */
+    var pct  = Math.round(data[nd.key] / 24 * 100) + "%";
+    var midX = (srcX + NW + destX) / 2;
+    var midY = ((sf.y0 + sf.y1) / 2 + (nd.y0 + nd.y1) / 2) / 2;
+    var minH = Math.min(sf.y1 - sf.y0, nd.y1 - nd.y0);
+    if (minH > 13) {
+      var pt = addText(g, midX, midY, pct, { "text-anchor": "middle", "font-size": minH > 30 ? "13" : "10", fill: "rgba(255,255,255,0.76)", "font-weight": "600", "pointer-events": "none" });
+    }
+
+    /* tap ring on social time */
+    if (isSoc) {
+      var cny = (nd.y0 + nd.y1) / 2;
+      var ring = mkEl("circle");
+      setAttrs(ring, { cx: destX + NW / 2, cy: cny.toFixed(1), r: "13", fill: "none", stroke: "#f59e0b", "stroke-width": "2", class: "tap-ring" });
+      ring.style.cursor = "pointer";
+      ring.addEventListener("click", goToSlide1);
+      g.appendChild(ring);
+    }
+  });
+}
+
+/* =====================================================
+   DRAW COMPANION SANKEY - slide 1
+   Friends is at the TOP to match user expectation.
+   ===================================================== */
+function nearestYear(ag, targetYr) {
+  var yrs = COMPANION_YEAR_DATA.filter(function(d) { return d.e === ag; }).map(function(d) { return d.yr; }).sort(function(a, b) { return a - b; });
+  return yrs.reduce(function(best, yr) { return Math.abs(yr - targetYr) < Math.abs(best - targetYr) ? yr : best; }, yrs[0]);
+}
+
+function drawComp(ag, yrIdx) {
+  curAgeComp = ag;
+  curYrIdx   = yrIdx;
+  var yr      = COMPANION_YEARS[yrIdx];
+  var nearest = nearestYear(ag, yr);
+  var row     = COMPANION_YEAR_DATA.find(function(d) { return d.e === ag && d.yr === nearest; });
+  if (!row) return;
+
+  var firstNy  = nearestYear(ag, COMPANION_YEARS[0]);
+  var baseRow  = COMPANION_YEAR_DATA.find(function(d) { return d.e === ag && d.yr === firstNy; });
+  var baseFr   = baseRow ? baseRow.friends : 1.031;
+  var currFr   = row.friends;
+  var pctChg   = ((currFr - baseFr) / baseFr * 100).toFixed(0);
+
+  /* update callout */
+  document.getElementById("yrNow").textContent  = nearest;
+  document.getElementById("fcHrs").textContent  = currFr.toFixed(2) + " hrs/day";
+  document.getElementById("fcPct").textContent  = nearest > COMPANION_YEARS[0] ? pctChg + "%" : "";
+  document.getElementById("fcSince").textContent = nearest > COMPANION_YEARS[0] ? "vs " + COMPANION_YEARS[0] : "baseline";
+
+  /* sort: friends first (it is always first in COMP_KEYS), then rest by value descending */
+  var friendsEntry = COMP_KEYS.find(function(k) { return k.key === "friends"; });
+  var others = COMP_KEYS.filter(function(k) { return k.key !== "friends"; });
+  others.sort(function(a, b) { return row[b.key] - row[a.key]; });
+  var vals = [friendsEntry].concat(others).map(function(k) {
+    return { key: k.key, label: k.label, color: k.color, val: row[k.key] };
+  });
+  var total = vals.reduce(function(s, v) { return s + v.val; }, 0);
+
+  var svgEl = document.getElementById("compSvg");
+  svgEl.innerHTML = "";
+  var W=870, H=330, ML=92, MR=194, MT=20, MB=10, NW=18, GAP=4;
+  var PW=W-ML-MR, PH=H-MT-MB;
+  var ppu  = (PH - (vals.length - 1) * GAP) / total;
+  var srcX = ML, destX = ML + PW - NW;
+
+  var destY = MT;
+  var nodes = vals.map(function(v, i) {
+    var h = v.val * ppu, y0 = destY, y1 = destY + h;
+    destY = y1 + (i < vals.length - 1 ? GAP : 0);
+    return Object.assign({}, v, { y0: y0, y1: y1, h: h });
+  });
+  var srcY = MT;
+  var srcFlows = vals.map(function(v) {
+    var h = v.val * ppu, y0 = srcY, y1 = srcY + h;
+    srcY = y1;
+    return { y0: y0, y1: y1 };
+  });
+
+  var g = mkEl("g");
+  svgEl.appendChild(g);
+
+  /* source bar - amber for social time */
+  var srcRect = mkEl("rect");
+  setAttrs(srcRect, { x: srcX, y: MT, width: NW, height: PH, fill: "#f59e0b", opacity: "0.85", rx: "2" });
+  g.appendChild(srcRect);
+  addText(g, srcX - 10, MT + PH / 2 - 9, "Time", { "text-anchor": "end", "font-size": "13", "font-weight": "700", fill: "#f59e0b" });
+  addText(g, srcX - 10, MT + PH / 2 + 9, "with others", { "text-anchor": "end", "font-size": "11", fill: "#64748b" });
+
+  /* flows and destination nodes */
+  nodes.forEach(function(nd, i) {
+    var sf    = srcFlows[i];
+    var isFr  = nd.key === "friends";
+    var baseOp = isFr ? 0.6 : 0.2;
+
+    var path = mkEl("path");
+    setAttrs(path, { d: flowPath(srcX + NW, sf.y0, sf.y1, destX, nd.y0, nd.y1), fill: nd.color, "fill-opacity": baseOp });
+    path.addEventListener("mouseover", function(e) {
+      path.setAttribute("fill-opacity", baseOp + 0.3);
+      showTip("<strong>" + nd.label + "</strong>" + nd.val.toFixed(2) + " hrs/day (" + Math.round(nd.val / total * 100) + "% of total)", e);
+    });
+    path.addEventListener("mouseout", function() { path.setAttribute("fill-opacity", baseOp); hideTip(); });
+    g.appendChild(path);
+
+    var rect = mkEl("rect");
+    setAttrs(rect, { x: destX, y: nd.y0.toFixed(1), width: NW, height: (nd.y1 - nd.y0).toFixed(1), fill: nd.color, opacity: isFr ? "0.95" : "0.75", rx: "2" });
+    rect.addEventListener("mouseover", function(e) { showTip("<strong>" + nd.label + "</strong>" + nd.val.toFixed(2) + " hrs/day", e); });
+    rect.addEventListener("mouseout", hideTip);
+    g.appendChild(rect);
+
+    var lx = destX + NW + 11, ly = (nd.y0 + nd.y1) / 2, big = nd.h > 18;
+    addText(g, lx, big ? ly - 6 : ly, nd.label, { "font-size": isFr ? "14" : "13", "font-weight": isFr ? "700" : "400", fill: isFr ? "#f59e0b" : "#8e97b0" });
+    if (big) addText(g, lx, ly + 10, nd.val.toFixed(2) + "h", { "font-size": "11", fill: "#4e5769" });
+
+    /* pct inside ribbon - always show for friends even if thin */
+    var pct  = Math.round(nd.val / total * 100) + "%";
+    var midX = (srcX + NW + destX) / 2;
+    var midY = ((sf.y0 + sf.y1) / 2 + (nd.y0 + nd.y1) / 2) / 2;
+    var minH = Math.min(sf.y1 - sf.y0, nd.y1 - nd.y0);
+    if (minH > 10 || isFr) {
+      addText(g, midX, midY, pct, { "text-anchor": "middle", "font-size": minH > 24 ? "13" : "10", fill: "rgba(255,255,255,0.76)", "font-weight": "600", "pointer-events": "none" });
+    }
+  });
+}
+
+/* =====================================================
+   SLIDESHOW - go to companion view
+   ===================================================== */
+function goToSlide1() {
+  if (onSlide === 1) return;
+  onSlide = 1;
+
+  document.getElementById("cardTitle").textContent = "Who Americans Spend Time With";
+  document.querySelectorAll(".dot").forEach(function(d) { d.classList.toggle("on", d.dataset.s === "1"); });
+  document.getElementById("backBtn").classList.add("show");
+  document.getElementById("clickHint").style.display = "none";
+
+  /* swap controls to companion age tabs */
+  document.getElementById("ctrlBar").innerHTML =
+    "<span class='ctrl-label'>Age group</span>" +
+    "<div class='pill-row' id='compPills'>" +
+    "<button class='pill on' data-ag='All ages'>All ages</button>" +
+    "<button class='pill' data-ag='15-29'>20s</button>" +
+    "<button class='pill' data-ag='30-44'>30s &amp; 40s</button>" +
+    "<button class='pill' data-ag='45-59'>50s</button>" +
+    "<button class='pill' data-ag='60+'>60+</button>" +
+    "</div>";
+  document.getElementById("compPills").addEventListener("click", function(e) {
+    if (!e.target.classList.contains("pill")) return;
+    document.querySelectorAll("#compPills .pill").forEach(function(p) { p.classList.remove("on"); });
+    e.target.classList.add("on");
+    drawComp(e.target.dataset.ag, curYrIdx);
+  });
+
+  /* slide animation */
+  var s0 = document.getElementById("slide0"), s1 = document.getElementById("slide1");
+  s0.style.opacity = "0"; s0.style.transform = "translateX(-20px)";
+  setTimeout(function() {
+    s0.classList.add("hidden"); s0.style.opacity = ""; s0.style.transform = "";
+    s1.classList.remove("hidden"); s1.style.opacity = "0"; s1.style.transform = "translateX(20px)";
+    requestAnimationFrame(function() { s1.style.opacity = "1"; s1.style.transform = "translateX(0)"; });
+  }, 300);
+
+  document.getElementById("yrBar").style.display = "block";
+  document.getElementById("friendsCallout").style.display = "flex";
+  document.getElementById("srcNote").textContent = "Source: Our World In Data  U.S. Bureau of Labor Statistics (2025)";
+
+  drawComp("All ages", 0);
+}
+
+function goBack() {
+  if (onSlide === 0) return;
+  onSlide = 0;
+
+  document.getElementById("cardTitle").textContent = "Where Does Your Day Go?";
+  document.querySelectorAll(".dot").forEach(function(d) { d.classList.toggle("on", d.dataset.s === "0"); });
+  document.getElementById("backBtn").classList.remove("show");
+  document.getElementById("clickHint").style.display = "flex";
+
+  var onAg = curAgeDay;
+  document.getElementById("ctrlBar").innerHTML =
+    "<span class='ctrl-label'>Age group</span>" +
+    "<div class='pill-row' id='agePills'>" +
+    ["15-29:In your 20s","30-44:30s &amp; 40s","45-59:50s","60+:60 &amp; Older"].map(function(s) {
+      var parts = s.split(":");
+      return "<button class='pill" + (onAg === parts[0] ? " on" : "") + "' data-ag='" + parts[0] + "'>" + parts[1] + "</button>";
+    }).join("") + "</div>";
+  document.getElementById("agePills").addEventListener("click", function(e) {
+    if (!e.target.classList.contains("pill")) return;
+    document.querySelectorAll("#agePills .pill").forEach(function(p) { p.classList.remove("on"); });
+    e.target.classList.add("on");
+    drawDay(e.target.dataset.ag);
+  });
+
+  var s0 = document.getElementById("slide0"), s1 = document.getElementById("slide1");
+  s1.style.opacity = "0"; s1.style.transform = "translateX(20px)";
+  setTimeout(function() {
+    s1.classList.add("hidden"); s1.style.opacity = ""; s1.style.transform = "";
+    s0.classList.remove("hidden"); s0.style.opacity = "0"; s0.style.transform = "translateX(-20px)";
+    requestAnimationFrame(function() { s0.style.opacity = "1"; s0.style.transform = "translateX(0)"; });
+  }, 300);
+
+  document.getElementById("yrBar").style.display = "none";
+  document.getElementById("friendsCallout").style.display = "none";
+  document.getElementById("srcNote").textContent = "Source: Our World In Data  U.S. Bureau of Labor Statistics (2025)  BLS ATUS 2003-2020";
+}
+
+/* dot nav */
+document.querySelectorAll(".dot").forEach(function(d) {
+  d.addEventListener("click", function() { d.dataset.s === "1" ? goToSlide1() : goBack(); });
+});
+
+/* year slider */
+document.getElementById("yrSlider").addEventListener("input", function() {
+  drawComp(curAgeComp, Number(this.value));
+});
+
+/* initial age pills */
+document.getElementById("agePills").addEventListener("click", function(e) {
+  if (!e.target.classList.contains("pill")) return;
+  document.querySelectorAll("#agePills .pill").forEach(function(p) { p.classList.remove("on"); });
+  e.target.classList.add("on");
+  drawDay(e.target.dataset.ag);
+});
+
+window.addEventListener("resize", function() {
+  if (onSlide === 0) drawDay(curAgeDay);
+  else drawComp(curAgeComp, curYrIdx);
+});
+
+drawDay("15-29");
+</script>
+</body>
+</html>

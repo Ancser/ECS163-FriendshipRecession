@@ -111,8 +111,10 @@ svg{display:block;width:100%;overflow:visible;}
 #chart-ev svg{height:min(31vh,265px)!important;width:100%!important;}
 #chart-demo svg{height:min(35vh,300px)!important;width:100%!important;}
 #chart-stream svg{height:min(35vh,310px)!important;width:100%!important;}
-#s-everyone .scene-body,#s-demo .scene-body,#s-stream .scene-body{margin-bottom:18px!important;}
-#s-everyone .insight,#s-demo .insight,#s-stream .insight{display:none;}
+#s-everyone .scene-body,#s-stream .scene-body{margin-bottom:18px!important;}
+#s-everyone .insight,#s-stream .insight{display:none;}
+.chart-embed-scene{background:var(--bg);padding:0!important;overflow:hidden;}
+.chart-embed-frame{display:block;width:100%;height:calc(100vh - var(--nav-h));border:0;background:var(--bg);}
 #s-john,#s-health{min-height:calc(100vh - var(--nav-h))!important;}
 #s-health>div{padding:28px 40px!important;}
 #s-health h2{font-size:clamp(25px,4vw,46px)!important;}
@@ -127,7 +129,7 @@ svg{display:block;width:100%;overflow:visible;}
 #s-world .section-wrap{max-width:none;height:100%;padding:24px 0 0;}
 #s-world .world-copy{max-width:1400px;margin:0 auto;padding:0 56px;}
 #s-world .scene-body{margin-bottom:8px!important;}
-#s-everyone .section-wrap,#s-demo .section-wrap,#s-stream .section-wrap,#s-health>div,#s-world .section-wrap,#s-end>.scene-2col{transform:translateY(-5vh);}
+#s-everyone .section-wrap,#s-stream .section-wrap,#s-health>div,#s-world .section-wrap,#s-end>.scene-2col{transform:translateY(-5vh);}
 @media(max-width:1200px){#s-john .scene-2col{grid-template-columns:1fr;gap:32px;}#s-john .social-viz-pair{gap:28px;}}
 @media(max-width:700px){body{font-size:16px;}#ch-nav{height:46px;padding:0 24px;}.ch-brand,.ch-link{font-size:9px;}html{scroll-padding-top:46px;}.scene{min-height:calc(100vh - 46px);scroll-margin-top:46px;}.scene-2col{grid-template-columns:1fr;gap:36px;padding:28px 28px;}.section-wrap{padding:24px 28px;}h2.scene-title{font-size:clamp(28px,9vw,44px);}.scene-body{font-size:17px;}.social-viz-pair{gap:12px;}.radar-panel svg{width:300px;}.battery-panel svg{width:190px;}.john-score-number{font-size:38px;}.john-metric-list{display:none;}.john-slider-row{width:100%;}.john-year-readout{font-size:34px;min-width:78px;}.ins-grid{grid-template-columns:1fr;}.callouts{grid-template-columns:1fr;}.heatmap-grid{grid-template-columns:repeat(4,1fr);}}
 </style>
@@ -142,7 +144,6 @@ svg{display:block;width:100%;overflow:visible;}
   <a class="ch-link active" href="#s-hero">Intro</a>
   <a class="ch-link" href="#s-john">John</a>
   <a class="ch-link" href="#s-everyone">Everyone</a>
-  <a class="ch-link" href="#s-demo">By Group</a>
   <a class="ch-link" href="#s-stream">Lost Time</a>
   <a class="ch-link" href="#s-health">The Weight</a>
   <a class="ch-link" href="#s-world">World</a>
@@ -192,90 +193,13 @@ svg{display:block;width:100%;overflow:visible;}
 </section>
 
 <!-- EVERYONE -->
-<section class="scene" id="s-everyone" style="background:var(--bg);padding:60px 0;">
-  <div class="section-wrap">
-    <p class="eyebrow">The National Picture</p>
-    <h2 class="scene-title" style="max-width:640px;">John's story is <em>America's story.</em></h2>
-    <p class="scene-body" style="max-width:640px;margin-bottom:28px;">Every demographic group has experienced the same decline. The recession began <strong>around 2014 â€” before COVID</strong>, when smartphone-native apps reached critical mass.</p>
-    <div class="callouts">
-      <div class="callout"><span class="callout-n">4.76h</span><span class="callout-t">Hrs/week social &mdash; 2003</span></div>
-      <div class="callout"><span class="callout-n">2.8h</span><span class="callout-t">Hrs/week social &mdash; 2024</span></div>
-      <div class="callout"><span class="callout-n">&minus;41%</span><span class="callout-t">Total two-decade decline</span></div>
-    </div>
-    <div class="data-card">
-      <p class="card-title">Daily Socializing Time &mdash; U.S. Adults Age 15+</p>
-      <p class="card-sub">Average hours per week &middot; BLS American Time Use Survey &middot; Socializing & Communicating as primary activity</p>
-      <div class="toggles" id="t-ev"><button class="tb on" data-v="all">All Adults</button><button class="tb" data-v="gender">By Gender</button></div>
-      <div class="legend" id="leg-ev"></div>
-      <div id="chart-ev"></div>
-      <p class="src-note">Source: U.S. Bureau of Labor Statistics, American Time Use Survey Table A-1 (2003&ndash;2024). 2020 not published (COVID). Socializing = ATUS code 1200.</p>
-    </div>
-    <div class="insight" style="margin-top:0;">
-      <div class="ins-grid">
-        <div><div class="ins-label">Key Pattern</div><p class="ins-text"><strong>The pre-COVID collapse.</strong> Between 2014&ndash;2017 socializing dropped 10.9% in 3 years before any pandemic &mdash; aligning exactly with mass adoption of Snapchat and Instagram.</p></div>
-        <div><div class="ins-label">Core Insight</div><p class="ins-text"><strong>Structural, not personal.</strong> The decline was system-wide six years before COVID. Something in the fabric of American life had already begun to erode.</p></div>
-      </div>
-    </div>
-  </div>
+<section class="scene chart-embed-scene" id="s-everyone">
+  <iframe class="chart-embed-frame" src="line-chart.html?v=20260607-left-rail" title="Time spent socializing line chart" scrolling="no"></iframe>
 </section>
-
-<!-- DEMOGRAPHICS -->
-<section class="scene" id="s-demo" style="background:var(--bg2);padding:60px 0;">
-  <div class="section-wrap">
-    <p class="eyebrow">Who Is Most Affected?</p>
-    <h2 class="scene-title" style="max-width:640px;">The recession hits some <em>harder than others.</em></h2>
-    <p class="scene-body" style="max-width:640px;margin-bottom:28px;">Explore by age, gender, employment, income, education, and race. Every lens reveals the same pattern &mdash; and some groups have been hit much harder.</p>
-    <div class="data-card">
-      <p class="card-title">Social Time Lost by Group &mdash; 2003 vs. 2022 (minutes/day)</p>
-      <p class="card-sub">BLS ATUS &middot; dim bar = 2003 baseline &middot; bright bar = 2022 &middot; % = change since 2003</p>
-      <div class="toggles" id="t-demo">
-        <button class="tb on" data-v="age">Age</button>
-        <button class="tb" data-v="gender">Gender</button>
-        <button class="tb" data-v="employment">Employment</button>
-        <button class="tb" data-v="income">Income</button>
-        <button class="tb" data-v="education">Education</button>
-        <button class="tb" data-v="race">Race / Ethnicity</button>
-      </div>
-      <div id="chart-demo"></div>
-      <p class="src-note" id="demo-src">Source: BLS ATUS Table A-1 (2003, 2022). Race/ethnicity from ATUS supplemental tables.</p>
-    </div>
-    <div class="insight" style="margin-top:0;">
-      <div class="ins-grid">
-        <div><div class="ins-label">Youth &amp; Men</div><p class="ins-text"><strong>Ages 15&ndash;24 lost 54% of their social time.</strong> Many entered adulthood after the architecture for making friends had already collapsed. Men's zero-friend rate quintupled from 3% to 15%.</p></div>
-        <div><div class="ins-label">Race &amp; Income</div><p class="ins-text"><strong>Higher-income, college-educated groups show steeper percentage declines</strong> &mdash; work demands scale with income. Black and Hispanic Americans show smaller declines, potentially reflecting stronger community structures.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- STREAM GRAPH -->
-<section class="scene" id="s-stream" style="background:var(--bg);padding:60px 0;">
-  <div class="section-wrap">
-    <p class="eyebrow">Root Causes</p>
-    <h2 class="scene-title" style="max-width:640px;">Where did the <em>time go?</em></h2>
-    <p class="scene-body" style="max-width:640px;margin-bottom:28px;">The hours weren't lost &mdash; they were redirected. This stream graph shows how the American day shifted from 2003 to 2022. Social time (amber band) contracts as screen time expands. Hover any band to see values.</p>
-    <div class="data-card">
-      <p class="card-title">How Americans Spend Their Day &mdash; Stream Graph 2003&ndash;2022</p>
-      <p class="card-sub">Average daily minutes per activity &middot; BLS ATUS &middot; band width proportional to time &middot; hover to explore</p>
-      <div class="toggles" id="t-stream">
-        <button class="tb on" data-v="all">All Adults</button>
-        <button class="tb" data-v="young">Ages 15&ndash;24</button>
-        <button class="tb" data-v="men">Men</button>
-        <button class="tb" data-v="women">Women</button>
-      </div>
-      <div class="legend" id="leg-stream"></div>
-      <div id="chart-stream"></div>
-      <p class="src-note">Source: BLS ATUS Table A-1 (2003&ndash;2022). Sleep, Work/School, Socializing verified from published PDFs. Screen/leisure combines ATUS leisure categories. Values approximate averages across all days including weekends.</p>
-    </div>
-    <div class="insight" style="margin-top:0;">
-      <div class="ins-grid">
-        <div><div class="ins-label">The Screen Flood</div><p class="ins-text"><strong>Alone-with-screens absorbed the largest share</strong> of lost social time. Social media promised connection while delivering passive consumption. The amber socializing stream narrows exactly as the leisure/screen stream expands.</p></div>
-        <div><div class="ins-label">Why Social Time?</div><p class="ins-text"><strong>Coordination cost makes social time fragile.</strong> Sleep is non-negotiable. Work has deadlines. But meeting a friend requires mutual scheduling and effort &mdash; and that friction compounds over time.</p></div>
-      </div>
-    </div>
-  </div>
+<section class="scene chart-embed-scene" id="s-stream">
+  <iframe class="chart-embed-frame" src="sankey.html?v=20260607-left-rail" title="Where did the time go sankey chart" scrolling="no"></iframe>
 </section>
-
 <!-- HEALTH -->
 <section class="scene" id="s-health" style="background:var(--bg2);min-height:100vh;">
   <div style="max-width:720px;margin:0 auto;padding:72px 40px;text-align:center;">
@@ -885,8 +809,11 @@ function drawEv(view){
   mk('line',{x1:0,x2:pw,y1:ph,y2:ph,stroke:'rgba(255,255,255,0.1)','stroke-width':1},g);
   mk('line',{x1:0,x2:0,y1:0,y2:ph,stroke:'rgba(255,255,255,0.1)','stroke-width':1},g);
 }
-document.getElementById('t-ev').addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-ev .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawEv(e.target.dataset.v);});
-drawEv('all');
+const evToggle=document.getElementById('t-ev');
+if(evToggle){
+  evToggle.addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-ev .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawEv(e.target.dataset.v);});
+  drawEv('all');
+}
 
 // Demo chart
 function drawDemo(view){
@@ -911,8 +838,11 @@ function drawDemo(view){
   mk('rect',{x:98,y:2,width:13,height:6,fill:'#F5A623',rx:2},leg);const lt2=mk('text',{x:115,y:8,'font-family':'JetBrains Mono,monospace','font-size':9,fill:'rgba(155,163,184,0.6)'},leg);lt2.textContent='2022 (min/day) \u00b7 % = change since 2003';
   document.getElementById('demo-src').textContent='Note: '+DEMO_NOTES[view]+' \u00b7 BLS ATUS supplemental tables.';
 }
-document.getElementById('t-demo').addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-demo .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawDemo(e.target.dataset.v);});
-drawDemo('age');
+const demoToggle=document.getElementById('t-demo');
+if(demoToggle){
+  demoToggle.addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-demo .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawDemo(e.target.dataset.v);});
+  drawDemo('age');
+}
 
 // Stream graph
 function drawStream(view){
@@ -949,8 +879,11 @@ function drawStream(view){
   mk('line',{x1:0,x2:pw,y1:ph,y2:ph,stroke:'rgba(255,255,255,0.08)','stroke-width':1},g);
   document.getElementById('leg-stream').innerHTML=cats.map(c=>`<div class="li"><div class="ld" style="background:${c.c}"></div>${c.n}</div>`).join('');
 }
-document.getElementById('t-stream').addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-stream .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawStream(e.target.dataset.v);});
-drawStream('all');
+const streamToggle=document.getElementById('t-stream');
+if(streamToggle){
+  streamToggle.addEventListener('click',e=>{if(!e.target.classList.contains('tb'))return;document.querySelectorAll('#t-stream .tb').forEach(b=>b.classList.remove('on'));e.target.classList.add('on');drawStream(e.target.dataset.v);});
+  drawStream('all');
+}
 
 // Cigarettes
 function makeCigs(id,n,pc,fc){const el=document.getElementById(id);for(let i=0;i<n;i++){const w=document.createElement('div');w.className='cig-mini';w.innerHTML=`<div class="cig-mini-paper" style="background:${pc};"></div><div class="cig-mini-filter" style="background:${fc};"></div>`;el.appendChild(w);}}
@@ -967,7 +900,7 @@ makeCigs('cig-lonely',15,'#d4c5a0','#c8845a');makeCigs('cig-obesity',8,'#8e97b0'
 })();
 
 // Nav
-const NAV=['s-hero','s-john','s-everyone','s-demo','s-stream','s-health','s-world','s-end'];
+const NAV=['s-hero','s-john','s-everyone','s-stream','s-health','s-world','s-end'];
 const chLinks=document.querySelectorAll('.ch-link');
 window.addEventListener('scroll',()=>{
   const sy=window.scrollY,dh=document.body.scrollHeight-window.innerHeight;
@@ -1000,4 +933,3 @@ window.addEventListener('scroll',()=>{
 <script src="map.js?v=20260607-horizontal-pan"></script>
 </body>
 </html>
-
