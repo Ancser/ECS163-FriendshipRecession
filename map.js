@@ -709,7 +709,21 @@ var mapSvg = d3.select("#map")
 
 var mapG = mapSvg.append("g");
 
-mapSvg.style("cursor", "default");
+var mapPan = d3.zoom()
+    .scaleExtent([1, 1])
+    .filter(function(event) {
+        return event.type !== "wheel" && event.type !== "dblclick";
+    })
+    .on("zoom", function(event) {
+        mapG.attr("transform", "translate(" + event.transform.x + ",0) scale(1)");
+    });
+
+mapSvg
+    .call(mapPan)
+    .on("wheel.zoom", null)
+    .style("touch-action", "pan-y")
+    .on("mousedown.cursor", function() { mapSvg.style("cursor", "grabbing"); })
+    .on("mouseup.cursor mouseleave.cursor", function() { mapSvg.style("cursor", "grab"); });
 
 // ════════════════════════════════════════════════════════
 //  EVENT WIRING
