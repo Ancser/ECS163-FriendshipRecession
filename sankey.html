@@ -66,9 +66,6 @@ h3 { font-size: clamp(15px, 1.5vw, 18px); font-weight: 600; }
 .pill:hover { border-color: var(--amber); color: var(--text); }
 .pill.on { background: var(--amber); color: #0a0e1a; border-color: var(--amber); }
 
-/* click hint line */
-.click-hint { padding: 0 28px 12px; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 13px; color: rgba(245,158,11,0.7); }
-
 /* ── Slide transitions ──────────────────────── */
 .slide { transition: opacity 0.36s ease, transform 0.36s ease; }
 .slide.hidden { display: none; }
@@ -116,15 +113,17 @@ input[type=range]::-moz-range-thumb {
   border: 1px solid rgba(245,158,11,0.2);
   border-left: 4px solid var(--amber);
   border-radius: 0 10px 10px 0;
-  flex-wrap: wrap;
+  grid-template-columns: 1fr;
   gap: 20px;
   align-items: center;
+  min-height: 110px;
 }
 .fc-main { }
+.fc-topline { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
 .fc-hrs { font-size: clamp(32px, 4vw, 48px); font-weight: 700; color: var(--amber); line-height: 1; }
 .fc-label { font-family: var(--mono); font-size: 13px; color: #94a3b8; margin-top: 4px; }
-.fc-pct { font-size: clamp(36px, 5vw, 56px); font-weight: 700; color: var(--red); line-height: 1; }
-.fc-since { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-top: 4px; }
+.fc-pct { min-width: 92px; font-size: clamp(26px, 3vw, 38px); font-weight: 700; color: var(--red); line-height: 1; }
+.fc-since { min-height: 18px; font-family: var(--mono); font-size: 13px; color: var(--muted); margin-top: 4px; }
 
 /* ── Tooltip ────────────────────────────────── */
 #tip { position: fixed; background: rgba(10,14,26,0.97); border: 1px solid rgba(255,255,255,0.1); color: var(--text); padding: 12px 16px; border-radius: 8px; font-family: var(--mono); font-size: 13px; pointer-events: none; opacity: 0; transition: opacity 0.1s; z-index: 999; line-height: 1.7; max-width: 230px; box-shadow: 0 8px 32px rgba(0,0,0,0.7); }
@@ -144,7 +143,7 @@ svg { display: block; width: 100%; }
 }
 @media (max-width: 640px) {
   body { padding: 20px 14px 48px; }
-  .card-head, .controls, .yr-bar, .click-hint, .friends-callout, .src-note { padding-left: 16px; padding-right: 16px; }
+  .card-head, .controls, .yr-bar, .friends-callout, .src-note { padding-left: 16px; padding-right: 16px; }
   .friends-callout { margin: 14px 16px 0; }
 }
 </style>
@@ -179,17 +178,11 @@ svg { display: block; width: 100%; }
   <div class="controls" id="ctrlBar">
     <span class="ctrl-label">Age group</span>
     <div class="pill-row" id="agePills">
-      <button class="pill on" data-ag="15-29">In your 20s</button>
+      <button class="pill on" data-ag="15-29">20s</button>
       <button class="pill" data-ag="30-44">30s &amp; 40s</button>
       <button class="pill" data-ag="45-59">50s</button>
-      <button class="pill" data-ag="60+">60 &amp; Older</button>
+      <button class="pill" data-ag="60+">60+</button>
     </div>
-  </div>
-
-  <!-- tap hint (slide 0 only) -->
-  <div class="click-hint" id="clickHint">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#f59e0b" stroke-width="1.5"/><circle cx="8" cy="8" r="3" fill="#f59e0b"/></svg>
-    Tap the amber <strong style="color:var(--amber);margin:0 3px;">Social Time</strong> ribbon to see where it goes
   </div>
 
   <!-- slide wrapper -->
@@ -205,11 +198,11 @@ svg { display: block; width: 100%; }
   <!-- friends callout (slide 1 only) -->
   <div class="friends-callout" id="friendsCallout">
     <div class="fc-main">
-      <div class="fc-hrs" id="fcHrs">1.03 hrs/day</div>
+      <div class="fc-topline">
+        <div class="fc-hrs" id="fcHrs">1.03 hrs/day</div>
+        <div class="fc-pct" id="fcPct"></div>
+      </div>
       <div class="fc-label">with friends</div>
-    </div>
-    <div>
-      <div class="fc-pct" id="fcPct"></div>
       <div class="fc-since" id="fcSince"></div>
     </div>
   </div>
@@ -261,7 +254,7 @@ var COMP_KEYS = [
 
 var onSlide    = 0;
 var curAgeDay  = "15-29";
-var curAgeComp = "All ages";
+var curAgeComp = "15-29";
 var curYrIdx   = 0;
 
 var tip = document.getElementById("tip");
@@ -388,7 +381,7 @@ function drawDay(ag) {
     if (isSoc) {
       var cny = (nd.y0 + nd.y1) / 2;
       var ring = mkEl("circle");
-      setAttrs(ring, { cx: destX + NW / 2, cy: cny.toFixed(1), r: "13", fill: "none", stroke: "#f59e0b", "stroke-width": "2", class: "tap-ring" });
+      setAttrs(ring, { cx: destX + NW / 2, cy: cny.toFixed(1), r: "20", fill: "rgba(245,158,11,0.01)", stroke: "#f59e0b", "stroke-width": "2.4", class: "tap-ring" });
       ring.style.cursor = "pointer";
       ring.addEventListener("click", goToSlide1);
       g.appendChild(ring);
@@ -408,6 +401,7 @@ function nearestYear(ag, targetYr) {
 function drawComp(ag, yrIdx) {
   curAgeComp = ag;
   curYrIdx   = yrIdx;
+  document.getElementById("yrSlider").value = yrIdx;
   var yr      = COMPANION_YEARS[yrIdx];
   var nearest = nearestYear(ag, yr);
   var row     = COMPANION_YEAR_DATA.find(function(d) { return d.e === ag && d.yr === nearest; });
@@ -510,17 +504,17 @@ function goToSlide1() {
   document.getElementById("cardTitle").textContent = "Who Americans Spend Time With";
   document.querySelectorAll(".dot").forEach(function(d) { d.classList.toggle("on", d.dataset.s === "1"); });
   document.getElementById("backBtn").classList.add("show");
-  document.getElementById("clickHint").style.display = "none";
+  var clickHint = document.getElementById("clickHint");
+  if (clickHint) clickHint.style.display = "none";
 
   /* swap controls to companion age tabs */
   document.getElementById("ctrlBar").innerHTML =
     "<span class='ctrl-label'>Age group</span>" +
     "<div class='pill-row' id='compPills'>" +
-    "<button class='pill on' data-ag='All ages'>All ages</button>" +
-    "<button class='pill' data-ag='15-29'>20s</button>" +
-    "<button class='pill' data-ag='30-44'>30s &amp; 40s</button>" +
-    "<button class='pill' data-ag='45-59'>50s</button>" +
-    "<button class='pill' data-ag='60+'>60+</button>" +
+    ["15-29:20s","30-44:30s &amp; 40s","45-59:50s","60+:60+","All ages:All ages"].map(function(s) {
+      var p = s.split(":");
+      return "<button class='pill " + (p[0] === curAgeDay ? "on" : "") + "' data-ag='" + p[0] + "'>" + p[1] + "</button>";
+    }).join("") +
     "</div>";
   document.getElementById("compPills").addEventListener("click", function(e) {
     if (!e.target.classList.contains("pill")) return;
@@ -539,10 +533,10 @@ function goToSlide1() {
   }, 300);
 
   document.getElementById("yrBar").style.display = "block";
-  document.getElementById("friendsCallout").style.display = "flex";
+  document.getElementById("friendsCallout").style.display = "grid";
   document.getElementById("srcNote").textContent = "Source: Our World In Data  U.S. Bureau of Labor Statistics (2025)";
 
-  drawComp("All ages", 0);
+  drawComp(curAgeDay, 0);
 }
 
 function goBack() {
@@ -552,13 +546,14 @@ function goBack() {
   document.getElementById("cardTitle").textContent = "Where Does Your Day Go?";
   document.querySelectorAll(".dot").forEach(function(d) { d.classList.toggle("on", d.dataset.s === "0"); });
   document.getElementById("backBtn").classList.remove("show");
-  document.getElementById("clickHint").style.display = "flex";
+  var clickHint = document.getElementById("clickHint");
+  if (clickHint) clickHint.style.display = "flex";
 
   var onAg = curAgeDay;
   document.getElementById("ctrlBar").innerHTML =
     "<span class='ctrl-label'>Age group</span>" +
     "<div class='pill-row' id='agePills'>" +
-    ["15-29:In your 20s","30-44:30s &amp; 40s","45-59:50s","60+:60 &amp; Older"].map(function(s) {
+    ["15-29:20s","30-44:30s &amp; 40s","45-59:50s","60+:60+"].map(function(s) {
       var parts = s.split(":");
       return "<button class='pill" + (onAg === parts[0] ? " on" : "") + "' data-ag='" + parts[0] + "'>" + parts[1] + "</button>";
     }).join("") + "</div>";

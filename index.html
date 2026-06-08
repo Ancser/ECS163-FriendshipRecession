@@ -43,7 +43,7 @@ h2.scene-title em{font-style:italic;font-weight:300;color:var(--amber);}
 .scene-body strong{color:var(--text);font-weight:500;}
 .hero-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:30px;}
 .stat-chip{border-top:2px solid var(--amber);padding-top:10px;min-width:106px;}
-.stat-n{font-family:var(--sans);font-size:29px;font-weight:700;color:var(--amber);display:block;line-height:1;margin-bottom:3px;}
+.stat-n{font-family:var(--sans);font-size:34px;font-weight:700;color:var(--amber);display:block;line-height:1;margin-bottom:5px;}
 .stat-l{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);line-height:1.6;}
 .scroll-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);animation:bob 2s ease-in-out infinite;}
 @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
@@ -59,7 +59,7 @@ h2.scene-title em{font-style:italic;font-weight:300;color:var(--amber);}
 #s-end .social-viz-pair{gap:39px;}
 #s-end .scene-body{font-size:clamp(17px,1.08vw,21px);line-height:1.62;max-width:560px;}
 #s-end .hero-stats{margin-top:20px!important;}
-#s-end .stat-n{font-size:25px;}
+#s-end .stat-n{font-size:30px;}
 .radar-panel svg{width:522px;max-width:100%;height:auto;overflow:visible;}
 .battery-panel svg{width:280px;max-width:100%;height:auto;overflow:visible;}
 .john-score-mini{margin-top:6px;text-align:center;}
@@ -97,8 +97,10 @@ h2.scene-title em{font-style:italic;font-weight:300;color:var(--amber);}
 .cig-row-item{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .cig-label{font-family:var(--mono);font-size:10px;color:var(--text2);width:150px;text-align:right;flex-shrink:0;}
 .cig-bar-wrap{display:flex;gap:3px;}
-.cig-mini{width:18px;height:56px;border-radius:3px 3px 0 0;overflow:hidden;display:flex;flex-direction:column;}
-.cig-mini-paper{flex:1;}.cig-mini-filter{height:13px;}
+.cig-mini{width:13px;height:67px;border-radius:2px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 1px rgba(255,255,255,.08);}
+.cig-mini-tip{height:9px;background:linear-gradient(180deg,#d54032 0%,#7d838d 58%,#3e444d 100%);}
+.cig-mini-paper{flex:1;background:#f2efe8;}
+.cig-mini-filter{height:16px;background:#c8845a;}
 .cig-count{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--amber);margin-left:8px;white-space:nowrap;}
 .heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:14px;}
 .hm-cell{border-radius:6px;padding:8px 5px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;user-select:none;}
@@ -116,14 +118,22 @@ svg{display:block;width:100%;overflow:visible;}
 .chart-embed-scene{background:var(--bg);padding:0!important;overflow:hidden;}
 .chart-embed-frame{display:block;width:100%;height:calc(100vh - var(--nav-h));height:calc(100dvh - var(--nav-h));border:0;background:var(--bg);}
 #s-john,#s-health{min-height:calc(100vh - var(--nav-h))!important;min-height:calc(100dvh - var(--nav-h))!important;}
-#s-health>div{padding:28px 40px!important;}
-#s-health h2{font-size:clamp(25px,4vw,46px)!important;}
-#s-health .cig-compare{gap:9px;margin:12px 0;}
-#s-health .cig-mini{width:14px;height:42px;}
-#s-health .cig-mini-filter{height:10px;}
+#s-health>div{padding:12px 40px!important;}
+#s-health h2{font-size:clamp(25px,3.5vw,42px)!important;}
+#s-health p{line-height:1.5!important;margin-bottom:14px!important;}
+#s-health .cig-compare{gap:6px;margin:8px 0;}
+#s-health .cig-mini{width:10px;height:37px;}
+#s-health .cig-mini-tip{height:5px;}
+#s-health .cig-mini-filter{height:8px;}
+#s-health .cig-row-item{gap:7px;}
+#s-health .cig-label{width:142px;}
 #s-health .hero-stats{margin-top:14px!important;}
-#s-health .stat-chip{padding-top:7px;}
-#s-health .stat-n{font-size:24px;}
+#s-health .stat-chip{padding-top:10px;min-width:132px;}
+#s-health .stat-n{font-size:38px;}
+#s-health .stat-l{font-size:13px;color:var(--text);line-height:1.45;}
+#s-health [style*="padding:26px 22px"]{padding:14px 18px!important;margin-bottom:14px!important;}
+#s-health [style*="margin-top:14px"]{margin-top:7px!important;padding-top:7px!important;}
+#s-health [style*="margin-top:50px"]{margin-top:14px!important;font-size:15px!important;}
 #s-health svg[style*="animation:bob"]{margin-top:4px!important;}
 #s-world{padding:0!important;}
 #s-world .section-wrap{max-width:none;height:100%;padding:24px 0 0;}
@@ -185,7 +195,7 @@ svg{display:block;width:100%;overflow:visible;}
 </section>
 
 <!-- JOHN -->
-<section class="scene" id="s-john" style="background:var(--bg2);min-height:100vh;">
+<section class="scene" id="s-john" style="background:var(--bg);min-height:100vh;">
   <div class="scene-2col">
     <div>
       <p class="eyebrow" id="j-eyebrow">Who is most connected?</p>
@@ -668,7 +678,11 @@ function initJohnCsvViz(rows){
     return area?`M${pts.map(p=>p.join(',')).join('L')}L${x2},${bottomY}L${x1},${bottomY}Z`:'M'+pts.map(p=>p.join(',')).join('L');
   }
 
-  const currentPoly=radarSvg.append('polygon').attr('fill','none').attr('stroke','#ff6f79').attr('stroke-width',3.2);
+  const currentPoly=radarSvg.append('polygon')
+    .attr('fill','rgba(0,158,115,.20)')
+    .attr('stroke','var(--teal)')
+    .attr('stroke-width',3.2)
+    .attr('stroke-linejoin','round');
   const dotG=radarSvg.append('g');
 
   bodySvg.attr('viewBox','0 0 650 650').attr('preserveAspectRatio','xMidYMid meet');
@@ -729,7 +743,7 @@ function initJohnCsvViz(rows){
     });
     currentPoly.transition().duration(dur).attr('points',pointData.map(p=>`${p.x},${p.y}`).join(' '));
     dotG.selectAll('circle').data(pointData).join('circle')
-      .attr('r',4).attr('fill','#ff6f79').attr('stroke','var(--bg)').attr('stroke-width',2)
+      .attr('r',4).attr('fill','var(--teal)').attr('stroke','var(--bg)').attr('stroke-width',2)
       .on('mouseover',(e,p)=>showTip(`<strong>${p.d.label}</strong><br>Value: ${p.raw.toFixed(1)}${p.d.unit}<br>vs ${JOHN_BASELINE_YEAR}: ${((p.ratio-1)*100).toFixed(0)}%`,e))
       .on('mousemove',moveTip).on('mouseout',hideTip)
       .transition().duration(dur).attr('cx',p=>p.x).attr('cy',p=>p.y);
@@ -749,6 +763,11 @@ function initJohnCsvViz(rows){
 
   johnCsvViz={year:JOHN_BASELINE_YEAR,playing:false,timer:null,restart:null,update};
   d3.select('#john-year-slider').on('input',function(){
+    clearInterval(johnCsvViz.timer);
+    clearTimeout(johnCsvViz.restart);
+    johnCsvViz.playing=false;
+    const btn=document.getElementById('j-btn');
+    if(btn)btn.textContent="Show John's Story";
     johnCsvViz.year=+this.value;
     johnCsvViz.update(johnCsvViz.year,180);
   });
@@ -764,17 +783,14 @@ Promise.all([
 function beginJohnCsvLoop(){
   clearInterval(johnCsvViz.timer);
   johnCsvViz.timer=setInterval(()=>{
-    johnCsvViz.year+=1/15.6;
+    johnCsvViz.year+=1/7.8;
     if(johnCsvViz.year>2022){
       johnCsvViz.year=2022;
       johnCsvViz.update(johnCsvViz.year,50);
       clearInterval(johnCsvViz.timer);
-      johnCsvViz.restart=setTimeout(()=>{
-        if(!johnCsvViz.playing)return;
-        johnCsvViz.year=JOHN_BASELINE_YEAR;
-        johnCsvViz.update(johnCsvViz.year,260);
-        beginJohnCsvLoop();
-      },3000);
+      johnCsvViz.playing=false;
+      const btn=document.getElementById('j-btn');
+      if(btn)btn.textContent="Show John's Story";
       return;
     }
     johnCsvViz.update(johnCsvViz.year,50);
@@ -886,8 +902,8 @@ if(streamToggle){
 }
 
 // Cigarettes
-function makeCigs(id,n,pc,fc){const el=document.getElementById(id);for(let i=0;i<n;i++){const w=document.createElement('div');w.className='cig-mini';w.innerHTML=`<div class="cig-mini-paper" style="background:${pc};"></div><div class="cig-mini-filter" style="background:${fc};"></div>`;el.appendChild(w);}}
-makeCigs('cig-lonely',15,'#d4c5a0','#c8845a');makeCigs('cig-obesity',8,'#8e97b0','#7b5ea7');makeCigs('cig-inactive',5,'#8e97b0','#7b5ea7');makeCigs('cig-drink',3,'#8e97b0','#7b5ea7');
+function makeCigs(id,n){const el=document.getElementById(id);for(let i=0;i<n;i++){const w=document.createElement('div');w.className='cig-mini';w.innerHTML='<div class="cig-mini-tip"></div><div class="cig-mini-paper"></div><div class="cig-mini-filter"></div>';el.appendChild(w);}}
+makeCigs('cig-lonely',15);makeCigs('cig-obesity',8);makeCigs('cig-inactive',5);makeCigs('cig-drink',3);
 
 // Stars
 (function(){
