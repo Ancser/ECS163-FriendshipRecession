@@ -1,5 +1,7 @@
 # The Friendship Recession
 
+Main link: https://ancser.github.io/ECS163-FriendshipRecession/
+
 An interactive **D3.js scrollytelling** visualization tracing the decline of close friendship and social connection in America, and how it compares across the world. The piece follows a single recurring character ("John") through a sequence of full-screen scenes, moving from a guided, author-driven narrative into open, reader-driven exploration — the [Segel & Heer](https://idl.cs.washington.edu/papers/narrative/) "martini-glass" structure.
 
 > ECS 163 — Information Interfaces, Final Project — Team 01
