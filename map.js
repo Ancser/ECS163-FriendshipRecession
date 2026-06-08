@@ -339,6 +339,7 @@ const POLICIES = {
 
 const NAME_MAP = {
     "USA":                 "United States",
+    "England":             "United Kingdom",
     "United Kingdom of Great Britain and Northern Ireland": "United Kingdom",
     "Republic of Korea":                        "South Korea",
     "Korea":                                    "South Korea",
