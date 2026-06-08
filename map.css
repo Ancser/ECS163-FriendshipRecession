@@ -508,9 +508,6 @@
 #s-world #gender-detail.detail-overlay {
     display: none;
     inset: 0;
-    top: auto;
-    right: auto;
-    width: auto;
     max-height: none;
     overflow: visible;
     border: 0;
