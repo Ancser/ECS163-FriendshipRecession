@@ -634,13 +634,16 @@ function showPolicyDetail(policyId, countryKey) {
     var pols = POLICIES[countryKey] || [];
     var p = pols.find(function(x) { return x.id === policyId; });
     if (!p) return;
+    document.getElementById("sidebar").classList.add("policy-mode");
     document.getElementById("pd-title").textContent = p.name;
     document.getElementById("pd-body").innerHTML    = p.detail;
     document.getElementById("policy-detail").classList.add("show");
+    document.getElementById("pd-body").scrollTop = 0;
 }
 
 function closePolicyDetail() {
     document.getElementById("policy-detail").classList.remove("show");
+    document.getElementById("sidebar").classList.remove("policy-mode");
 }
 
 // ════════════════════════════════════════════════════════

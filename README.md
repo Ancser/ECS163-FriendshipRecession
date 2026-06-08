@@ -28,8 +28,7 @@ Throughout, a single semantic color scheme is held constant (teal = improving, r
 ```
 .
 ├── index.html                        # The scrollytelling experience — all eight scenes
-├── main.js                           # Scene logic for index.html (glyph, charts, scene wiring)
-├── style.css                         # Styles for the scrollytelling page
+├── style.css                         # Legacy/reference styles from earlier prototypes
 │
 ├── map.html                          # Standalone "Global Loneliness Atlas" — entry point
 ├── map.js                            # Map + policy-detail engine (embedded Gallup + policy data)
@@ -59,7 +58,7 @@ Throughout, a single semantic color scheme is held constant (teal = improving, r
 └── README.md
 ```
 
-> **Note on the two artifacts.** The repo contains the main eight-scene scrollytelling page (`index.html` + `main.js` + `style.css`) and a **standalone "Global Loneliness Atlas"** (`map.html` + `map.js` + `map.css`) — a self-contained, more polished version of the world-map scene with an embedded Gallup dataset and a curated policy database. The two share the same map design language but are independently runnable. `line-chart.html`, `sankey.html`, and `preview.html` are standalone prototype/development pages for individual scenes and are not part of the main narrative flow.
+> **Note on the two artifacts.** The repo contains the main eight-scene scrollytelling page (`index.html`, with scene logic inlined) and a **standalone "Global Loneliness Atlas"** (`map.html` + `map.js` + `map.css`) — a self-contained, more polished version of the world-map scene with an embedded Gallup dataset and a curated policy database. The two share the same map design language but are independently runnable. `line-chart.html`, `sankey.html`, and `preview.html` are standalone prototype/development pages for individual scenes and are not part of the main narrative flow.
 
 ### Data provenance
 
